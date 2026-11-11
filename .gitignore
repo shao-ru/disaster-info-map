@@ -1,0 +1,20 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# 個人用の資料（共有しない）
+doc(cn)/
+
+# データ：static（アプリ用・処理済み）だけを Git に入れる
+# raw は中身を入れず、ファイル一覧の README.md だけ入れる
+data/raw/*
+!data/raw/README.md
+data/cache/
+*.zip

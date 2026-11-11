@@ -1,0 +1,107 @@
+/* style.css - 画面のレイアウトと見た目 */
+
+:root {
+  --flood: #0b8a6a;
+  --other: #8a929a;
+  --ink: #1d2327;
+  --muted: #5f6b73;
+  --line: #dde2e6;
+  --bg: #f6f7f8;
+  --panel: #ffffff;
+  --accent: #1f6fd1;
+  --warn-bg: #fff4d6;
+  --warn-ink: #6b4e00;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px max(14px, env(safe-area-inset-left));
+  background: var(--panel); border-bottom: 1px solid var(--line);
+}
+.app-header h1 { font-size: 17px; margin: 0; }
+.tag { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: #e8eef6; color: var(--accent); }
+
+.banner { padding: 8px 14px; font-size: 14px; background: #e8eef6; }
+.banner-warn { background: var(--warn-bg); color: var(--warn-ink); }
+
+/* スマホ：地図が上、一覧が下 */
+.layout { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+#map { flex: 1; min-height: 50vh; }
+.panel {
+  background: var(--panel); border-top: 1px solid var(--line);
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+  max-height: 45vh; overflow-y: auto;
+}
+
+/* PC：一覧が左、地図が右 */
+@media (min-width: 800px) {
+  .layout { flex-direction: row-reverse; }
+  .panel { width: 360px; max-height: none; border-top: 0; border-right: 1px solid var(--line); }
+}
+
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.panel-head h2 { font-size: 15px; margin: 4px 0 8px; }
+.muted { color: var(--muted); font-size: 13px; }
+
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.filters button {
+  font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: #fff; cursor: pointer;
+}
+.filters button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.shelter-list { list-style: none; margin: 0; padding: 0; }
+.shelter-list button {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  font: inherit; font-size: 15px; text-align: left;
+  padding: 10px 4px; border: 0; border-bottom: 1px solid var(--line); background: none; cursor: pointer;
+}
+.shelter-list button:hover { background: #f0f4f8; }
+.shelter-list .name { flex: 1; }
+.shelter-list .dist { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.dot-flood { background: var(--flood); }
+.dot-other { background: var(--other); }
+.dot.ring { box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--other); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.notice { font-size: 12px; color: var(--muted); line-height: 1.6; margin: 8px 0 0; }
+
+/* 吹き出し */
+.popup h3 { font-size: 15px; margin: 0 0 6px; }
+.popup p { margin: 4px 0; font-size: 13px; }
+.popup .popup-id { font-size: 11px; color: #8a929a; user-select: all; }
+.badges { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px; }
+.badge { font-size: 11px; padding: 1px 6px; border-radius: 4px; }
+.badge-shelter { background: #e7f3e9; color: #1d6b2f; }
+.badge-emergency { background: #e8eef6; color: #1f4f8f; }
+.flood-ok b, .flood-ok { color: #1f4f8f; }
+.flood-ng { color: #8a3b12; }
+
+/* 地域の選択 */
+.picker { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.picker .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.picker label { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; }
+.picker select, .picker button { font: inherit; font-size: 14px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.picker button { cursor: pointer; }
+.picker button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.picker button:disabled { opacity: .5; cursor: not-allowed; }
+.sub { margin: -4px 0 8px; }
+.banner-task { background: #f3e8ff; color: #4b2a7a; }
+
+.swatch { display: inline-block; width: 16px; height: 10px; border-radius: 2px; }
+.swatch-area { background: rgba(122, 79, 209, .12); border: 2px solid #7a4fd1; }
+.swatch-boundary { border: 1.5px dashed #40474d; }

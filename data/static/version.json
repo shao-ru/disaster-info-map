@@ -1,0 +1,15 @@
+{
+ "generated": "2026-11-11",
+ "sources": {
+  "shelters": {
+   "name": "国土地理院 指定緊急避難場所・指定避難所データ",
+   "raw": "data/raw/避難所/",
+   "refine": "data/static/shelters/mergeFromCity_1_refine.csv, mergeFromCity_2_refine.csv"
+  },
+  "admin_boundaries": {
+   "name": "e-Stat 2020年国勢調査 小地域（町丁・字等）境界データ を市区町村ごとに融合・簡略化（約30m）",
+   "raw": "data/raw/admin_map/"
+  }
+ },
+ "notes": "政令市は区をまとめて市全体にしている（避難所データに合わせるため）。regions.json の center / bbox は境界から計算。"
+}

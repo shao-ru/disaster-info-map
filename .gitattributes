@@ -1,0 +1,3 @@
+# 改行コードを LF にそろえる（Windows・Mac の人が混ざっても、ファイル全体が「変更」にならないように）
+* text=auto eol=lf
+*.bat eol=crlf
