@@ -1,9 +1,10 @@
 # 避難所マップ（disaster-info-map）
 
 都道府県・市区町村を選ぶか現在地から、周辺の避難所を地図に表示する Web アプリです（試作版）。
-大学の授業で、学生と一緒に作っています。今後、洪水ハザードマップや雨量の情報を加え、オフラインでも使えるアプリ（PWA）にする予定です。
+今後、洪水ハザードマップや雨量の情報を加え、オフラインでも使えるアプリ（PWA）にする予定です。
 
-- アプリ：https://＜ユーザー名＞.github.io/disaster-info-map/
+- アプリ（GitHub Pages）：https://shao-ru.github.io/disaster-info-map/web/
+- リポジトリ：https://github.com/shao-ru/disaster-info-map
 - 参加する人へ：[参加ガイド](doc/参加ガイド.md) ／ [しくみの説明](doc/しくみの説明.md)
 
 ## 自分の PC で動かす
