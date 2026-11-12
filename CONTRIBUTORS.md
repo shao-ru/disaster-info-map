@@ -17,3 +17,4 @@
 |---|---|---|
 | Xiaowei Shao | shao-ru | 全体設計・Web の枠組み・UI |
 | Yamazaki  | a250897m-collab | |
+| Suzuki  | A250856S-jpg | |
