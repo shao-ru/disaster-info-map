@@ -13,15 +13,18 @@ python -m http.server との違い：
   → http://localhost:8000/web/  を開く（課題チェックは http://localhost:8000/web/test.html）
 """
 import http.server
+import socket
+import threading
 import posixpath
 from urllib.parse import unquote
 from functools import partial
 from pathlib import Path
 
-HOST = "127.0.0.1"   # 自分の PC だけ
+HOST = "127.0.0.1"   # 自分の PC だけ（IPv6 の ::1 でも待ち受ける）
 PORT = 8000
 ROOT = Path(__file__).resolve().parent.parent
 ALLOWED = ("/web/", "/data/static/")   # 公開するフォルダー
+ALLOWED_FILES = ("/CONTRIBUTORS.md",)  # 公開するファイル（「参加者」ボタンで表示）
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -34,7 +37,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Location", "/web/")
             self.end_headers()
             return None
-        if not path.startswith(ALLOWED):
+        if not (path.startswith(ALLOWED) or path in ALLOWED_FILES):
             self.send_error(404, "Not Found")
             return None
         return super().send_head()
@@ -50,11 +53,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     print("サーバーを起動しています…", flush=True)
+    handler = partial(Handler, directory=str(ROOT))
     try:
-        server = http.server.ThreadingHTTPServer((HOST, PORT), partial(Handler, directory=str(ROOT)))
+        server = http.server.ThreadingHTTPServer((HOST, PORT), handler)
     except OSError as e:
         raise SystemExit(f"ポート {PORT} を使えません（{e}）。\n"
                          "前に起動したサーバーが動いたままかもしれません。そのウィンドウで Ctrl+C を押すか、PC を再起動してください。")
+    # Mac の Safari などは localhost を IPv6（::1）で開こうとするので、::1 でも待ち受ける
+    try:
+        class V6Server(http.server.ThreadingHTTPServer):
+            address_family = socket.AF_INET6
+        v6 = V6Server(("::1", PORT), handler)
+        threading.Thread(target=v6.serve_forever, daemon=True).start()
+    except OSError:
+        pass   # IPv6 が使えない PC では 127.0.0.1 だけで動かす
     print(f"公開しているフォルダー：{ROOT}", flush=True)
     print(f"http://localhost:{PORT}/web/  を開いてください（止めるときは Ctrl+C）", flush=True)
     try:

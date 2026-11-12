@@ -62,8 +62,20 @@
         距離は直線距離です。実際の避難は、市の避難情報と現地の状況に従ってください。<br>
         出典：国土地理院「指定緊急避難場所・指定避難所データ」、地理院タイル
       </p>
+      <div class="panel-foot">
+        <button id="contributors-btn" type="button">参加者</button>
+      </div>
     </section>
   </main>
+
+  <!-- 「参加者」ボタンで開く（中身は CONTRIBUTORS.md） -->
+  <dialog id="contributors-dialog" class="dialog" aria-labelledby="contributors-title">
+    <div class="dialog-head">
+      <h2 id="contributors-title">参加者（Contributors）</h2>
+      <button type="button" class="dialog-close" aria-label="閉じる">✕</button>
+    </div>
+    <div class="dialog-body"></div>
+  </dialog>
 
   <script type="module" src="js/main.js"></script>
 </body>
