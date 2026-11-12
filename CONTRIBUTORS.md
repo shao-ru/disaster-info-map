@@ -16,3 +16,4 @@
 | 名前 | GitHub | 担当・興味のある分野 |
 |---|---|---|
 | Xiaowei Shao | shao-ru | 全体設計・Web の枠組み・UI |
+| Yamazaki  | a250897m-collab | |
