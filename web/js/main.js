@@ -19,6 +19,7 @@ import { buildPopup } from "./popup.js";
 import { renderList } from "./list.js";
 import { getRegion } from "./student/region.js";
 import { findPrefectures, filterInArea } from "./student/search.js";
+import { setupContributors } from "./contributors.js";
 
 const state = {
   regions: null,
@@ -112,6 +113,7 @@ map.on("load", async () => {
   }
   setupPicker();
   setupFilters();
+  setupContributors($("contributors-btn"), $("contributors-dialog"));
   await runCity(); // 最初は柏市＋周辺を表示
 });
 
