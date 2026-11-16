@@ -1,0 +1,24 @@
+# Pull Request のチェック：避難所データと写真が正しいかを確かめる（結果は PR の画面に ✅ / ❌ で出る）
+name: チェック
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 避難所データ（_refine.csv・attrs）から GeoJSON を作り直し、PR の内容と同じか確かめる
+        run: |
+          python code/build_shelters.py
+          if ! git diff --quiet -- data/static/shelters data/static/regions.json; then
+            git diff --stat -- data/static/shelters data/static/regions.json
+            echo "::error::CSV と GeoJSON が合っていません。uv run ./code/build_shelters.py を実行して、できた GeoJSON もコミットしてください"
+            exit 1
+          fi
+      - name: 写真をチェック
+        run: python code/build_photos.py

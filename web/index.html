@@ -45,13 +45,16 @@
         <span id="count" class="muted"></span>
       </div>
       <p id="origin-label" class="muted sub"></p>
-      <div id="filters" class="filters" role="group" aria-label="絞り込み"></div>
+      <details class="conditions-box" open>
+        <summary>条件（合う避難所が緑になります）</summary>
+        <div id="conditions" class="conditions" role="group" aria-label="条件"></div>
+      </details>
       <div id="list"></div>
 
       <div class="legend">
-        <span><i class="dot dot-flood"></i>洪水に対応</span>
-        <span><i class="dot dot-other"></i>その他</span>
-        <span><i class="dot dot-other ring"></i>太い白縁＝指定避難所</span>
+        <span><i class="dot dot-match"></i>条件に合う</span>
+        <span><i class="dot dot-nomatch"></i>合わない</span>
+        <span><i class="dot dot-nomatch ring"></i>太い白縁＝指定避難所</span>
         <span><i class="swatch swatch-area"></i>検索した範囲</span>
         <span><i class="swatch swatch-boundary"></i>市区町村の範囲</span>
         <a href="test.html" target="_blank">課題チェック</a>
@@ -75,6 +78,26 @@
       <button type="button" class="dialog-close" aria-label="閉じる">✕</button>
     </div>
     <div class="dialog-body"></div>
+  </dialog>
+
+  <!-- 「写真を追加」で開く（手元で serve.py を動かしているときだけ） -->
+  <dialog id="photo-dialog" class="dialog" aria-labelledby="photo-title">
+    <div class="dialog-head">
+      <h2 id="photo-title">写真を追加</h2>
+      <button type="button" class="dialog-close" aria-label="閉じる">✕</button>
+    </div>
+    <form class="dialog-body photo-form">
+      <p id="photo-target" class="photo-target"></p>
+      <label>写真 <input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label>
+      <img id="photo-preview" class="photo-preview" alt="選んだ写真" hidden>
+      <p class="photo-gps muted"></p>
+      <label>撮影日 <input type="date" id="photo-taken" required></label>
+      <label>GitHub のユーザー名 <input type="text" id="photo-by" required autocomplete="username" placeholder="例：taro"></label>
+      <label>メモ（どこから撮ったか など） <input type="text" id="photo-note" maxlength="200" placeholder="例：正門から。体育館は奥"></label>
+      <p class="muted">写真は自動で小さくし、撮影場所などの記録を消してから保存します。人の顔や車のナンバーが写っていないか確かめてください。</p>
+      <p class="photo-msg" role="status"></p>
+      <div class="photo-actions"><button type="submit" id="photo-save" class="primary">保存</button></div>
+    </form>
   </dialog>
 
   <script type="module" src="js/main.js"></script>
