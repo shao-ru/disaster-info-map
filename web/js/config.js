@@ -19,6 +19,8 @@ export const CONFIG = {
   // データの場所（プロジェクトの data/static/。web/ から見た相対パス）
   regionsUrl: "../data/static/regions.json",                                   // 都道府県・市区町村の一覧
   prefSheltersUrl: (prefCode) => `../data/static/shelters/${prefCode}.geojson`, // 都道府県ごとの避難所
+  photosDir: "../data/static/photos/",                                         // 避難所の写真
+  photoIndexUrl: "../data/static/photos/index.json",                           // 写真の一覧（自動で作られる）
   boundariesUrl: (prefCode) => `../data/static/admin_boundaries/${prefCode}.geojson`, // 市区町村の範囲
 
   // 最初に選ばれている地域
@@ -37,21 +39,34 @@ export const CONFIG = {
 
   // 色
   colors: {
-    flood: "#0b8a6a", // 洪水に対応する指定緊急避難場所（現在地の青い点と区別するため緑系）
-    other: "#8a929a", // それ以外
+    match: "#0b8a6a",   // 条件に合う避難所（現在地の青い点と区別するため緑系）
+    nomatch: "#a3abb2", // 条件に合わない避難所
     area: "#7a4fd1",  // 検索範囲
     boundary: "#40474d", // 市区町村の範囲
   },
 
-  // 災害種別の表示名（GeoJSON の hazards のキー → 表示名）
+  // 条件の初期値（画面を開いたときの状態）
+  //   「不明も合うとみなす」を最初からチェックしておく。調査がまだの地域が、全部灰色にならないように
+  defaultConditions: { hazards: [], people: [], restricted: false, conditional: true, unknown: true },
+
+  // 受入れの表示名（attrs のキー → 表示名）
+  peopleLabels: {
+    elderly: "高齢者",
+    disabled: "障害者",
+    infant: "乳幼児・妊産婦",
+    pet: "ペット",
+    welfare: "福祉避難所",
+  },
+
+  // 災害の表示名（attrs のキー → 表示名）
   hazardLabels: {
     flood: "洪水",
     inland: "内水氾濫",
     landslide: "土砂災害",
     quake: "地震",
-    fire: "大規模な火事",
+    fire: "大規模火災",
     surge: "高潮",
     tsunami: "津波",
-    volcano: "火山現象",
+    volcano: "火山",
   },
 };

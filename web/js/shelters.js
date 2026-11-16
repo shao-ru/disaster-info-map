@@ -1,27 +1,21 @@
-// shelters.js - 避難所データの読み込み・絞り込み・距離計算
+// shelters.js - 避難所の値（attrs）の整理と、距離の計算
 
-import { CONFIG } from "./config.js";
+// 避難所の項目（attrs のキー）
+export const PEOPLE_KEYS = ["elderly", "disabled", "infant", "pet", "welfare"];
+export const HAZARD_KEYS = ["flood", "inland", "landslide", "quake", "fire", "tsunami", "surge", "volcano"];
+export const ATTR_KEYS = ["access", ...PEOPLE_KEYS, ...HAZARD_KEYS];
 
-// 絞り込みの種類
-export const FILTERS = {
-  all: { label: "すべて", test: () => true, expr: null },
-  flood: {
-    label: "洪水に対応",
-    test: (p) => p.flood,
-    expr: ["==", ["get", "flood"], true],
-  },
-  shelter: {
-    label: "指定避難所",
-    test: (p) => p.shelter,
-    expr: ["==", ["get", "shelter"], true],
-  },
-};
+// GeoJSON の attrs には「分かっている項目」だけが入っている。
+// 分からない項目を null（不明）で埋めて、すべての項目がそろったオブジェクトにする
+export function fullAttrs(props) {
+  const a = props.attrs || {};
+  return Object.fromEntries(ATTR_KEYS.map((k) => [k, a[k] ?? null]));
+}
 
-// GeoJSON を読み込む
-export async function loadShelters() {
-  const res = await fetch(CONFIG.dataUrl);
-  if (!res.ok) throw new Error(`避難所データを読み込めません（${res.status}）`);
-  return res.json();
+// 値の出どころ："survey"（調査）・"auto"（備考などから推定）・"gsi"（国土地理院の指定）・null（不明）
+export function sourceOf(props, key) {
+  if (props.attrs?.[key] == null) return null;
+  return props.src?.[key] || "gsi";
 }
 
 // 2 地点間の距離（km）。地球を球とみなした近似（ハバーサイン公式）
@@ -36,11 +30,9 @@ export function distanceKm(a, b) {
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
-// 基準地点から近い順に n 件を返す（絞り込み条件つき）
-export function nearest(features, origin, filterKey, n) {
-  const test = FILTERS[filterKey].test;
+// 基準地点から近い順に n 件を返す
+export function nearest(features, origin, n) {
   return features
-    .filter((f) => test(f.properties))
     .map((f) => {
       const [lng, lat] = f.geometry.coordinates;
       return { feature: f, km: distanceKm(origin, { lng, lat }) };

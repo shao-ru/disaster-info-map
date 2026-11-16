@@ -1,0 +1,185 @@
+"""
+shelter_attrs.py  -  避難所の「利用条件・受入れ・災害ごとの可否」を決める（build_shelters.py から使う）
+
+■ 値の意味（すべての項目で共通）
+    1 = 可　　2 = 条件付き（例：洪水のときは 2 階以上）　　0 = 不可　　None（空）= 不明
+
+■ 項目
+    access     利用条件　1=だれでも利用可　2=対象者のみ（access_note に条件）　0=直接行けない（二次避難所など）
+    elderly    高齢者　　disabled 障害者　　infant 乳幼児・妊産婦　　welfare 福祉避難所か　　pet ペット同行
+    flood inland landslide quake fire tsunami surge volcano
+               洪水・内水氾濫・土砂災害・地震・大規模な火事・津波・高潮・火山
+
+■ 値の決め方（上ほど優先）
+    ① 調査：data/static/shelters/attrs/<市区町村コード>.csv に書いた値（人が調べたもの）
+    ② 自動：国土地理院のデータから推定
+         - 指定緊急避難場所の「洪水」などの列：1 → 可、空 → 不可（その災害には指定されていない）
+         - 「受入対象者」「備考」の文字から推定（下の RULES）
+    ③ どれにもなければ 不明
+
+自動の推定ルール（auto_attrs）は、だれでも改善できます。
+改善したら build_shelters.py を実行し、件数の変化（最後に表示されます）を確かめてください。
+"""
+
+import csv
+import re
+from pathlib import Path
+
+PEOPLE = ["elderly", "disabled", "infant", "welfare", "pet"]
+HAZARDS = ["flood", "inland", "landslide", "quake", "fire", "tsunami", "surge", "volcano"]
+KEYS = ["access", *PEOPLE, *HAZARDS]
+ATTR_COLUMNS = ["id", "name", "address", "access", "access_note", *PEOPLE, *HAZARDS, "source", "by", "memo"]
+VALUES = {"1": 1, "2": 2, "0": 0}
+RESET = "?"   # attrs に「?」と書くと、自動の推定を消して「不明」に戻す
+
+# 文章の中で、災害を表すことば
+HAZARD_WORDS = {
+    "flood": ["洪水", "大雨"],
+    "inland": ["内水", "大雨"],
+    "landslide": ["土砂", "崖崩れ", "がけ崩れ", "土石流", "地滑り", "地すべり"],
+    "quake": ["地震"],
+    "fire": ["大規模な火事", "大規模火災", "火事", "火災"],
+    "tsunami": ["津波"],
+    "surge": ["高潮"],
+    "volcano": ["火山"],
+}
+MARKS = {"〇": 1, "○": 1, "◯": 1, "△": 2, "×": 0, "✕": 0, "✖": 0, "Ｘ": 0}
+NEAR = r"[^。\n、,，]{0,12}"   # ことばの近く（同じ文の 12 文字以内）
+
+CARE = ["要配慮", "要援護", "要支援", "配慮を要する", "配慮が必要"]
+PEOPLE_WORDS = {
+    "elderly": ["高齢"],
+    "disabled": ["障害", "障がい", "障碍"],
+    "infant": ["乳幼児", "乳児", "幼児", "妊産婦", "妊婦"],
+}
+
+
+def auto_attrs(target, notes, designated):
+    """
+    国土地理院のデータから自動で推定する。
+      target     : 受入対象者（文字列）
+      notes      : 備考（文字列のリスト。指定避難所と指定緊急避難場所の両方）
+      designated : 指定緊急避難場所の災害ごとの指定 {"flood": True, …}。指定緊急避難場所でなければ None
+    戻り値 : ({項目: 値}, {項目: "gsi" または "auto"})　値が決まらない項目は入れない
+    """
+    values, src = {}, {}
+
+    def put(key, value, how):
+        values[key] = value
+        src[key] = how
+
+    # ① 指定緊急避難場所の指定（国土地理院）
+    if designated is not None:
+        for key in HAZARDS:
+            put(key, 1 if designated.get(key) else 0, "gsi")
+
+    text = " ".join(notes)
+    # ② 備考の記号：「洪水〇」「地震○」「土砂△」「津波×」
+    for key, words in HAZARD_WORDS.items():
+        for w in words:
+            # 「土砂災害〇」「火山噴火×」「崖崩れ等〇」のように、間に 3 文字までは入ってよい
+            for m in re.finditer(re.escape(w) + r"[^\s〇○◯△×✕✖Ｘ、。:：]{0,3}[:：]?[^\S\n]*([〇○◯△×✕✖Ｘ])", text):
+                put(key, MARKS[m.group(1)], "auto")
+    # ③ 「洪水時使用不可」「洪水の際は使用できない」→ 不可
+    for key, words in HAZARD_WORDS.items():
+        for w in words:
+            if re.search(re.escape(w) + NEAR + r"(使用不可|利用不可|使用できな|利用できな|避難不可)", text):
+                put(key, 0, "auto")
+    # ④ 「『洪水』では2階以上に避難」「【洪水：2階以上】」→ 条件付き
+    for key, words in HAZARD_WORDS.items():
+        for w in words:
+            if re.search(re.escape(w) + NEAR + r"[2-9２-９]\s*階以上", text) and values.get(key) != 0:
+                put(key, 2, "auto")
+
+    # ⑤ 受入対象者：書いてあれば「対象者のみ」の福祉避難所
+    who = target.strip()
+    if who:
+        put("access", 2, "auto")
+        put("welfare", 1, "auto")
+        if any(w in who for w in CARE):
+            for key in ("elderly", "disabled", "infant"):
+                put(key, 1, "auto")
+        for key, words in PEOPLE_WORDS.items():
+            if any(w in who for w in words):
+                put(key, 1, "auto")
+    if "福祉避難所" in text:
+        put("welfare", 1, "auto")
+        if "access" not in values:
+            put("access", 2, "auto")
+    if re.search(r"二次避難所|直接" + NEAR + r"(避難|来所|来場)" + NEAR + r"(不可|できません|できない)", text):
+        put("access", 0, "auto")
+
+    # ⑥ ペット
+    if re.search(r"ペット" + NEAR + r"(不可|できません|できない|禁止)", text):
+        put("pet", 0, "auto")
+    elif re.search(r"ペット" + NEAR + r"(可|受入|受け入れ|同行避難)", text):
+        put("pet", 1, "auto")
+    return values, src
+
+
+# ------------------------------------------------------------------ 調査の結果（attrs/*.csv）
+def read_attrs(attrs_dir, ids, errors):
+    """
+    attrs/<市区町村コード>.csv を読む。
+      ids    : {共通ID: 施設の代表 ID}（施設のどちらの共通ID で書いてもよい）
+    戻り値 : {代表 ID: {"values": {項目: 値 or None}, "access_note": …, "source": …, "by": …}}
+    """
+    result = {}
+    for path in sorted(Path(attrs_dir).glob("*.csv")):
+        raw = path.read_bytes()
+        try:
+            text = raw.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            errors.append(f"attrs/{path.name}：UTF-8 で読めません（Excel で保存した？ VS Code で保存し直してください）")
+            continue
+        rows = list(csv.DictReader(text.splitlines()))
+        if rows and (missing := [c for c in ("id", *KEYS, "source") if c not in rows[0]]):
+            errors.append(f"attrs/{path.name}：列が足りません：{', '.join(missing)}")
+            continue
+        for i, r in enumerate(rows, start=2):
+            where = f"attrs/{path.name} {i} 行目"
+            fid = (r.get("id") or "").strip()
+            if not fid:
+                continue
+            if fid not in ids:
+                errors.append(f"{where}：共通ID「{fid}」の施設がありません")
+                continue
+            if fid[1:6] != path.stem:
+                errors.append(f"{where}：共通ID「{fid}」はこのファイル（{path.stem}）の市区町村ではありません")
+            main = ids[fid]
+            if main in result:
+                errors.append(f"{where}：同じ施設（{main}）がすでに書かれています")
+                continue
+            values = {}
+            for key in KEYS:
+                v = (r.get(key) or "").strip()
+                if v == "":
+                    continue
+                if v == RESET:
+                    values[key] = None
+                elif v in VALUES:
+                    values[key] = VALUES[v]
+                else:
+                    errors.append(f"{where}：{key} は 1・2・0・?・空 のどれかにしてください（今は「{v}」）")
+            note = (r.get("access_note") or "").strip()
+            source = (r.get("source") or "").strip()
+            if (values or note) and not source:
+                errors.append(f"{where}：source（根拠の URL や資料名）を書いてください")
+            if values or note:
+                result[main] = {"values": values, "access_note": note, "source": source,
+                                "by": (r.get("by") or "").strip()}
+    return result
+
+
+def merge(auto_values, auto_src, survey):
+    """自動の推定に、調査の結果を上書きする。戻り値：(attrs, src)　値が不明の項目は入れない"""
+    attrs, src = dict(auto_values), dict(auto_src)
+    if survey:
+        for key, v in survey["values"].items():
+            if v is None:
+                attrs.pop(key, None)
+                src.pop(key, None)
+            else:
+                attrs[key] = v
+                src[key] = "survey"
+    return attrs, src

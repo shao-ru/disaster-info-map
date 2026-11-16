@@ -2,7 +2,12 @@
 // （データの文字はすべて textContent で入れる。HTML として解釈させない）
 
 import { CONFIG } from "./config.js";
-import { formatDistance } from "./shelters.js";
+import { formatDistance, fullAttrs, sourceOf, HAZARD_KEYS } from "./shelters.js";
+import { isLocalServer, renderPhotos } from "./photos.js";
+
+const MARK = { 1: "○", 2: "△", 0: "×" };
+const SOURCE = { survey: "調査で確認", auto: "備考・受入対象者から推定", gsi: "国土地理院の指定" };
+const POPUP_PEOPLE = ["elderly", "disabled", "infant", "pet"];
 
 function el(tag, className, text) {
   const e = document.createElement(tag);
@@ -11,7 +16,35 @@ function el(tag, className, text) {
   return e;
 }
 
-export function buildPopup(props, km, originLabel) {
+// 値の一覧（○ △ × ？）
+function marks(props, attrs, keys, labels) {
+  const box = el("div", "marks");
+  for (const key of keys) {
+    const v = attrs[key];
+    const src = sourceOf(props, key);
+    const span = el("span", `mark mark-v${v ?? "u"}${src === "survey" ? " mark-survey" : ""}`);
+    span.append(el("b", null, v == null ? "？" : MARK[v]), labels[key]);
+    span.title = v == null ? "不明" : SOURCE[src];
+    box.append(span);
+  }
+  return box;
+}
+
+function accessLine(props, attrs) {
+  const note = props.accessNote || "";
+  const lines = {
+    1: ["access-ok", "だれでも利用できます"],
+    2: ["access-limited", `対象者のみ${note ? "：" + note : ""}`],
+    0: ["access-no", `直接は行けません（二次避難所など）${note ? "：" + note : ""}`],
+  };
+  const [cls, text] = lines[attrs.access] || ["access-unknown", "利用条件：不明"];
+  return el("p", `access ${cls}`, text);
+}
+
+// feature：避難所、km：基準地点からの距離、opts.onAddPhoto(feature, refresh)：「写真を追加」を押したとき
+export function buildPopup(feature, km, originLabel, opts = {}) {
+  const props = feature.properties;
+  const attrs = fullAttrs(props);
   const box = el("div", "popup");
   box.append(el("h3", null, props.name));
 
@@ -19,34 +52,49 @@ export function buildPopup(props, km, originLabel) {
   const badges = el("div", "badges");
   if (props.shelter) badges.append(el("span", "badge badge-shelter", "指定避難所"));
   if (props.emergency) badges.append(el("span", "badge badge-emergency", "指定緊急避難場所"));
+  if (attrs.welfare === 1) badges.append(el("span", "badge badge-welfare", "福祉避難所"));
   box.append(badges);
 
-  // 洪水への対応
-  let floodText = "情報なし（指定緊急避難場所ではない）";
-  if (props.emergency) floodText = props.flood ? "対応" : "対応していない";
-  const flood = el("p", props.flood ? "flood-ok" : "flood-ng");
-  flood.append(el("b", null, "洪水："), document.createTextNode(floodText));
-  box.append(flood);
+  box.append(accessLine(props, attrs));
+  box.append(el("p", "marks-title", "災害"), marks(props, attrs, HAZARD_KEYS, CONFIG.hazardLabels));
+  box.append(el("p", "marks-title", "受入れ"), marks(props, attrs, POPUP_PEOPLE, CONFIG.peopleLabels));
+  box.append(el("p", "marks-legend", "○ 可　△ 条件付き　× 不可　？ 不明　（太字の枠：調査で確認）"));
 
-  // 対応する災害
-  if (props.hazards && props.hazards.length) {
-    const names = props.hazards.map((h) => CONFIG.hazardLabels[h] || h).join("、");
-    const p = el("p");
-    p.append(el("b", null, "対応する災害："), document.createTextNode(names));
+  if (props.survey) {
+    const p = el("p", "muted", `調査：${props.survey.by || "—"}　根拠：`);
+    if (/^https?:\/\//.test(props.survey.source)) {
+      const a = el("a", null, props.survey.source);
+      a.href = props.survey.source;
+      a.target = "_blank";
+      a.rel = "noopener";
+      p.append(a);
+    } else {
+      p.append(props.survey.source);
+    }
     box.append(p);
   }
-
-  // 受入対象者・備考
-  if (props.target) {
+  if (props.target && props.target !== props.accessNote) {
     const p = el("p");
     p.append(el("b", null, "受入対象者："), document.createTextNode(props.target));
     box.append(p);
   }
   if (props.note) box.append(el("p", "muted", props.note));
 
+  // 写真（あとから読み込む）
+  const photos = el("div", "photos");
+  photos.hidden = true;
+  box.append(photos);
+  renderPhotos(photos, props.id);
+  isLocalServer().then((local) => {
+    if (!local || !opts.onAddPhoto) return;
+    const btn = el("button", "add-photo", "📷 写真を追加");
+    btn.type = "button";
+    btn.addEventListener("click", () => opts.onAddPhoto(feature, () => renderPhotos(photos, props.id)));
+    photos.after(btn);
+  });
+
   box.append(el("p", "muted", props.address));
   if (km != null) box.append(el("p", null, `${originLabel}から直線で ${formatDistance(km)}`));
-  box.append(el("p", "popup-id", `共通ID：${(props.ids || [props.id]).join(" / ")}`)); // データを直すとき、_refine.csv をこの ID で検索する
-
+  box.append(el("p", "popup-id", `共通ID：${(props.ids || [props.id]).join(" / ")}`)); // データを直すとき、_refine.csv や attrs をこの ID で検索する
   return box;
 }

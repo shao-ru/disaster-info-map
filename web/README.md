@@ -24,9 +24,10 @@ uv run ./code/serve.py
 ④ 県を調べる ………… 課題 2  findPrefectures()  js/student/search.js
 ⑤ 避難所を選ぶ ……… 課題 3  filterInArea()     js/student/search.js
 ⑥ 地図と一覧に表示 … main.js の showResult()
+⑦ 条件で色分け ……… 課題 4  matchesConditions()  js/student/conditions.js
 ```
 
-②④⑤ は今「仮の実装」です。課題を完成させると、選んだ範囲の避難所が正しく表示されるようになります。
+②④⑤⑦ は今「仮の実装」です。課題を完成させると、選んだ範囲・条件の避難所が正しく表示されるようになります。
 
 ## ファイル構成
 
@@ -38,15 +39,19 @@ uv run ./code/serve.py
 | `js/config.js` | 初期位置・色・表示名などの設定 |
 | `js/student/region.js` | **課題 1** |
 | `js/student/search.js` | **課題 2・3** |
+| `js/student/conditions.js` | **課題 4-1・4-2**（条件に合う避難所を緑にする） |
 | `js/data.js` | データ読み込みの共通関数（課題で使ってよい） |
 | `js/geo.js` | 範囲を作る・調べる共通関数（Turf.js を使用。課題で使ってよい） |
-| `js/shelters.js` | 絞り込み・距離計算 |
-| `js/list.js` / `js/popup.js` | 一覧 / 吹き出し |
+| `js/shelters.js` | 避難所の値（attrs）の整理・距離計算 |
+| `js/conditions-ui.js` | 画面の「条件」（災害・受入れなど） |
+| `js/photos.js` | 写真の表示と「写真を追加」（手元の serve.py のときだけ） |
+| `js/list.js` / `js/popup.js` / `js/contributors.js` | 一覧 / 吹き出し / 参加者 |
 | `js/main.js` | 地図の表示と全体の流れ |
 | `js/test.js` | 課題チェックの中身（書き換えない） |
 | `../data/static/regions.json` | 都道府県・市区町村の一覧（自動生成） |
 | `../data/static/shelters/*_refine.csv` | 避難所の元データ（国土地理院のデータをみんなで直したもの） |
-| `../data/static/shelters/<県コード>.geojson` | 上の CSV から `code/build_shelters.py` で自動生成 |
+| `../data/static/shelters/<県コード>.geojson` | 上の CSV と `attrs/*.csv` から `code/build_shelters.py` で自動生成 |
+| `../data/static/photos/` | 避難所の写真（吹き出しの「写真を追加」で保存） |
 | `../data/static/admin_boundaries/*.geojson` | 市区町村の範囲（e-Stat の境界データから自動生成） |
 
 ## データの作り直し

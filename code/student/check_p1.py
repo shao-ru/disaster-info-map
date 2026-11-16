@@ -31,7 +31,8 @@ for pref in ["12", "13"]:
     except Exception as e:  # noqa: BLE001
         report(f"県コード {pref}：エラーなく実行できる", False, f"エラー：{e!r}")
         continue
-    cities = [c for c in regions["cities"] if c["prefCode"] == pref]
+    # 避難所が 1 つもない市区町村（例：奥多摩町）は、集計に出てこなくてよい
+    cities = [c for c in regions["cities"] if c["prefCode"] == pref and c["count"] > 0]
     report(f"県コード {pref}：{len(cities)} 市区町村がそろっている", len(stats) == len(cities),
            f"返ってきたのは {len(stats)} 市区町村です")
     wrong = [c["fullName"] for c in cities if stats.get(c["code"], {}).get("shelters") != c["count"]]

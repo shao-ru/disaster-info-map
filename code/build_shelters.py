@@ -9,6 +9,8 @@ build_shelters.py  -  避難所の CSV から、アプリ用の GeoJSON を作�
   data/static/shelters/mergeFromCity_2_refine.csv        … 指定緊急避難場所（みんなで直す）
         │  このツール
         ▼
+  data/static/shelters/attrs/<市区町村コード>.csv          … 調査した利用条件・受入れ・災害ごとの可否（みんなで書く）
+        │
   data/static/shelters/<県コード>.geojson                 … アプリが読み込む
   data/static/regions.json の施設数（count）
 
@@ -39,6 +41,8 @@ import re
 import shutil
 import sys
 import unicodedata
+
+from shelter_attrs import KEYS as ATTR_KEYS, auto_attrs, merge, read_attrs
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -49,6 +53,7 @@ OUT_DIR = ROOT / "data/static/shelters"
 SRC = {1: OUT_DIR / "mergeFromCity_1_refine.csv",    # 指定避難所
        2: OUT_DIR / "mergeFromCity_2_refine.csv"}    # 指定緊急避難場所
 REGIONS = ROOT / "data/static/regions.json"
+ATTRS_DIR = OUT_DIR / "attrs"
 
 # 指定緊急避難場所の災害種別（CSV の列名 → GeoJSON のキー）
 HAZARDS = {
@@ -125,7 +130,8 @@ def facility(r):
     return {"id": cid, "ids": [cid], "name": r["施設・場所名"].strip(), "address": (r["住所"] or "").strip(),
             "prefCode": cid[1:3], "cityCode": cid[1:6], "pref": pref, "city": city,
             "lat": float(r["緯度"]), "lon": float(r["経度"]),
-            "shelter": False, "emergency": False, "hazards": [], "target": "", "note": ""}
+            "shelter": False, "emergency": False, "target": "", "note": "",
+            "_remarks": [], "_designated": None}   # _ で始まるものは、自動の推定にだけ使う（GeoJSON には出さない）
 
 
 def build(rows1, rows2):
@@ -137,6 +143,7 @@ def build(rows1, rows2):
         f["shelter"] = True
         f["target"] = (r["受入対象者"] or "").strip()
         f["note"] = (r["備考"] or "").strip()
+        f["_remarks"].append(f["note"])
         facilities.append(f)
         waiting[(f["id"][:11], norm(f["name"]))].append(f)
     # 指定緊急避難場所：同じ施設があればまとめる。なければ新しい施設
@@ -149,18 +156,49 @@ def build(rows1, rows2):
             f = facility(r)
             facilities.append(f)
         f["emergency"] = True
-        f["hazards"] = [k for col, k in HAZARDS.items() if (r[col] or "").strip() == "1"]
+        f["_designated"] = {k: (r[col] or "").strip() == "1" for col, k in HAZARDS.items()}
+        note = (r["備考"] or "").strip()
+        f["_remarks"].append(note)
         if not f["note"]:
-            f["note"] = (r["備考"] or "").strip()
+            f["note"] = note
     return facilities
 
 
+def add_attrs(facilities, survey):
+    """利用条件・受入れ・災害ごとの可否を決める（自動の推定 → 調査の結果で上書き）"""
+    for f in facilities:
+        values, src = auto_attrs(f["target"], f["_remarks"], f["_designated"])
+        s = survey.get(f["id"])
+        f["attrs"], f["src"] = merge(values, src, s)
+        note = (s or {}).get("access_note") or (f["target"] if f["attrs"].get("access") == 2 else "")
+        if note:
+            f["accessNote"] = note
+        if s:
+            f["survey"] = {"source": s["source"], "by": s["by"]}
+
+
 def to_feature(f):
-    p = {k: v for k, v in f.items() if k not in ("lat", "lon")}
-    p["flood"] = "flood" in f["hazards"]
+    p = {k: v for k, v in f.items() if k not in ("lat", "lon") and not k.startswith("_")}
+    # 指定緊急避難場所として「洪水」に指定されているか（課題 P1 などで使う。調査の結果では変わらない）
+    p["flood"] = bool(f["_designated"] and f["_designated"].get("flood"))
+    # ファイルを小さくするため：src に何もない項目は「国土地理院の指定（gsi）」、attrs に無い項目は「不明」
+    p["src"] = {k: v for k, v in f["src"].items() if v != "gsi"}
+    for k in ("attrs", "src"):
+        if not p[k]:
+            del p[k]
     return {"type": "Feature",
             "geometry": {"type": "Point", "coordinates": [round(f["lon"], 6), round(f["lat"], 6)]},
             "properties": p}
+
+
+def print_attr_summary(facilities, surveyed):
+    """項目ごとに、値が分かっている施設の数（自動の推定ルールを直したときの確認用）"""
+    print(f"調査の結果（attrs/）：{surveyed} 施設")
+    print("項目ごとの件数（可 / 条件付き / 不可、［調査］）：")
+    for key in ATTR_KEYS:
+        c = Counter(f["attrs"][key] for f in facilities if key in f["attrs"])
+        n = sum(1 for f in facilities if f["src"].get(key) == "survey")
+        print(f"   {key:<9} {c[1]:>6} / {c[2]:>5} / {c[0]:>6}　［{n}］")
 
 
 def main():
@@ -190,6 +228,14 @@ def main():
         sys.exit(1)
 
     facilities = build(rows1, rows2)
+    idmap = {cid: f["id"] for f in facilities for cid in f["ids"]}
+    survey = read_attrs(ATTRS_DIR, idmap, errors) if ATTRS_DIR.exists() else {}
+    if errors:
+        print(f"❌ エラー {len(errors)} 件。何も書き換えていません。直してからもう一度実行してください。")
+        for e in errors[:30]:
+            print(f"   {e}")
+        sys.exit(1)
+    add_attrs(facilities, survey)
     both = sum(1 for f in facilities if f["shelter"] and f["emergency"])
     print(f"指定避難所 {len(rows1)} 行・指定緊急避難場所 {len(rows2)} 行 → {len(facilities)} 施設（両方に指定 {both}）")
 
@@ -203,6 +249,7 @@ def main():
         (OUT_DIR / f"{code}.geojson").write_text(
             json.dumps(gj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"✅ shelters/<県コード>.geojson：{len(by_pref)} 都道府県")
+    print_attr_summary(facilities, len(survey))
 
     if REGIONS.exists():   # 市区町村ごとの施設数を更新
         regions = json.loads(REGIONS.read_text(encoding="utf-8"))

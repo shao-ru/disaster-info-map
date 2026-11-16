@@ -7,24 +7,28 @@
 //   ④ 県を調べる ………… 課題 2  findPrefectures()  （js/student/search.js）
 //   ⑤ 避難所を選ぶ ……… 課題 3  filterInArea()     （js/student/search.js）
 //   ⑥ 地図と一覧に表示 … showResult()（このファイル）
+//   ⑦ 条件で色分け ……… 課題 4  matchesConditions()（js/student/conditions.js）
+//                         画面の「条件」に合う避難所を緑、合わない避難所を灰色にし、一覧には合うものだけを出す
 //
-// ②④⑤ は今は「仮の実装」です。課題を完成させると、選んだ地域の結果が正しく表示されます。
+// ②④⑤⑦ は今は「仮の実装」です。課題を完成させると、選んだ地域・条件の結果が正しく表示されます。
 
 import { CONFIG } from "./config.js";
 import { loadRegions, loadShelters, loadBoundary } from "./data.js";
 import { bufferArea, circleArea, bboxOf, bboxesOverlap, isInside } from "./geo.js";
-import { FILTERS, nearest } from "./shelters.js";
-import { distanceKm } from "./shelters.js";
+import { nearest, distanceKm, fullAttrs } from "./shelters.js";
+import { setupConditions } from "./conditions-ui.js";
+import { setupPhotoDialog } from "./photos.js";
 import { buildPopup } from "./popup.js";
 import { renderList } from "./list.js";
 import { getRegion } from "./student/region.js";
 import { findPrefectures, filterInArea } from "./student/search.js";
+import { matchesConditions } from "./student/conditions.js";
 import { setupContributors } from "./contributors.js";
 
 const state = {
   regions: null,
   features: [],                         // いま表示している避難所
-  filter: "all",
+  conditions: { ...CONFIG.defaultConditions },  // 画面の「条件」
   origin: { ...CONFIG.defaultOrigin },  // 距離の基準
   gps: null,                            // 現在地 {lng, lat}
 };
@@ -68,12 +72,14 @@ geolocate.on("geolocate", (e) => {
 geolocate.on("error", () => setStatus("現在地を取得できませんでした。位置情報の許可を確認してください。", "warn"));
 
 let popup = null;
+let openPhotoDialog = null;
 function showPopup(feature) {
   const [lng, lat] = feature.geometry.coordinates;
   if (popup) popup.remove();
   popup = new maplibregl.Popup({ maxWidth: "300px" })
     .setLngLat([lng, lat])
-    .setDOMContent(buildPopup(feature.properties, distanceKm(state.origin, { lng, lat }), state.origin.label))
+    .setDOMContent(buildPopup(feature, distanceKm(state.origin, { lng, lat }), state.origin.label,
+      { onAddPhoto: openPhotoDialog }))
     .addTo(map);
 }
 
@@ -91,11 +97,14 @@ map.on("load", async () => {
   map.addLayer({
     id: "shelters", type: "circle", source: "shelters",
     paint: {
-      "circle-color": ["case", ["get", "flood"], CONFIG.colors.flood, CONFIG.colors.other],
+      // 条件に合う（match が true）なら緑、合わなければ灰色
+      "circle-color": ["case", ["get", "match"], CONFIG.colors.match, CONFIG.colors.nomatch],
+      "circle-opacity": ["case", ["get", "match"], 1, 0.75],
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 2, 12, 4, 15, 7, 17, 10],
       "circle-stroke-color": "#ffffff",
       "circle-stroke-width": ["case", ["get", "shelter"], 2, 0.8],
     },
+    layout: { "circle-sort-key": ["case", ["get", "match"], 1, 0] },   // 緑の点を上に重ねる
   });
   // MapLibre が返す地物は配列が文字列になるため、元のデータを id で引く
   map.on("click", "shelters", (e) => {
@@ -112,7 +121,11 @@ map.on("load", async () => {
     return;
   }
   setupPicker();
-  setupFilters();
+  state.conditions = setupConditions($("conditions"), (c) => {
+    state.conditions = c;
+    applyConditions();
+  });
+  openPhotoDialog = setupPhotoDialog($("photo-dialog"));
   setupContributors($("contributors-btn"), $("contributors-dialog"));
   await runCity(); // 最初は柏市＋周辺を表示
 });
@@ -210,41 +223,39 @@ function showResult(title, shelters, area, boundary) {
   state.features = shelters;
   map.getSource("area").setData(area);
   map.getSource("boundary").setData(boundary || EMPTY);
-  map.getSource("shelters").setData({ type: "FeatureCollection", features: shelters });
   if (popup) popup.remove();
 
-  const flood = shelters.filter((f) => f.properties.flood).length;
   $("result-title").textContent = title;
-  $("count").textContent = `${shelters.length} 施設（洪水に対応 ${flood}）`;
   $("approx-note").hidden = !(boundary && boundary.properties.approx);
 
   const [x0, y0, x1, y1] = bboxOf(area);
   map.fitBounds([[x0, y0], [x1, y1]], { padding: 30, maxZoom: 15, duration: 800 });
+  applyConditions();
+}
+
+// ---------------------------------------------------------------- ⑦ 条件で色分け・一覧
+function applyConditions() {
+  let reported = false;
+  for (const f of state.features) {
+    let ok = true;
+    try {
+      ok = matchesConditions(fullAttrs(f.properties), state.conditions) !== false;   // ⑦ 課題 4
+    } catch (err) {
+      if (!reported) devNote(`課題 4：matchesConditions() でエラーが出ました（${err.message}）`);
+      reported = true;
+    }
+    f.properties.match = ok;
+  }
+  map.getSource("shelters").setData({ type: "FeatureCollection", features: state.features });
+  const n = state.features.filter((f) => f.properties.match).length;
+  $("count").textContent = `${state.features.length} 施設中 ${n} 施設が条件に合う`;
   updateList();
 }
 
-// ---------------------------------------------------------------- 絞り込みと一覧
-function setupFilters() {
-  const box = $("filters");
-  for (const [key, f] of Object.entries(FILTERS)) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = f.label;
-    btn.dataset.key = key;
-    btn.setAttribute("aria-pressed", String(key === state.filter));
-    btn.addEventListener("click", () => {
-      state.filter = key;
-      box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.key === key)));
-      map.setFilter("shelters", FILTERS[key].expr);
-      updateList();
-    });
-    box.append(btn);
-  }
-}
-
 function updateList() {
-  $("origin-label").textContent = `${state.origin.label}から近い順`;
-  const items = nearest(state.features, state.origin, state.filter, CONFIG.listSize);
+  $("origin-label").textContent = `${state.origin.label}から近い順（条件に合う避難所）`;
+  const matched = state.features.filter((f) => f.properties.match);
+  const items = nearest(matched, state.origin, CONFIG.listSize);
   renderList($("list"), items, (feature) => {
     map.flyTo({ center: feature.geometry.coordinates, zoom: Math.max(map.getZoom(), 15) });
     showPopup(feature);

@@ -6,7 +6,7 @@ import { formatDistance } from "./shelters.js";
 export function renderList(container, items, onSelect) {
   container.textContent = "";
   if (!items.length) {
-    container.append(Object.assign(document.createElement("p"), { textContent: "該当する避難所がありません" }));
+    container.append(Object.assign(document.createElement("p"), { className: "muted", textContent: "条件に合う避難所がありません" }));
     return;
   }
   const ol = document.createElement("ol");
@@ -18,7 +18,7 @@ export function renderList(container, items, onSelect) {
     btn.type = "button";
 
     const dot = document.createElement("span");
-    dot.className = "dot " + (p.flood ? "dot-flood" : "dot-other");
+    dot.className = "dot " + (p.match ? "dot-match" : "dot-nomatch");
     const name = document.createElement("span");
     name.className = "name";
     name.textContent = p.name;

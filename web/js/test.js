@@ -4,6 +4,8 @@ import { loadRegions, loadShelters, loadBoundary } from "./data.js";
 import { bufferArea, circleArea, bboxOf, bboxesOverlap, isInside } from "./geo.js";
 import { getRegion } from "./student/region.js";
 import { findPrefectures, filterInArea } from "./student/search.js";
+import { isOk, matchesConditions } from "./student/conditions.js";
+import { ATTR_KEYS } from "./shelters.js";
 
 const out = document.getElementById("out");
 out.textContent = "";
@@ -103,5 +105,49 @@ for (const a of areas) {
     const missing = [...exp].filter((id) => !got.has(id)).length;
     report(sec, `${a.label}：範囲内の ${exp.size} 件ちょうど`, extra === 0 && missing === 0,
       `範囲の外の避難所が ${extra} 件入っていて、範囲の中の避難所が ${missing} 件足りません`);
+  }
+}
+
+// ---------------- 課題 4-1 ----------------
+{
+  const sec = section("課題 4-1  isOk()  ★★☆☆☆");
+  const show = (v) => (v === null ? "null（不明）" : String(v));
+  const cases = [
+    [1, { conditional: false, unknown: false }, true],
+    [0, { conditional: true, unknown: true }, false],
+    [2, { conditional: true, unknown: false }, true],
+    [2, { conditional: false, unknown: true }, false],
+    [null, { conditional: false, unknown: true }, true],
+    [null, { conditional: true, unknown: false }, false],
+  ];
+  for (const [value, opt, exp] of cases) {
+    const r = await safe(() => isOk(value, opt));
+    report(sec, `値 ${show(value)}・条件付き ${opt.conditional ? "OK" : "NG"}・不明 ${opt.unknown ? "OK" : "NG"} → ${exp}`,
+      !r.error && r.value === exp, r.error ? `エラー：${r.error.message}` : `返ってきたのは ${r.value} です`);
+  }
+}
+
+// ---------------- 課題 4-2 ----------------
+{
+  const sec = section("課題 4-2  matchesConditions()  ★★★☆☆");
+  const attrs = (v) => ({ ...Object.fromEntries(ATTR_KEYS.map((k) => [k, null])), ...v });
+  const cond = (c) => ({ hazards: [], people: [], restricted: false, conditional: true, unknown: true, ...c });
+  const cases = [
+    ["何も選ばず、値はすべて不明（不明 OK）", attrs({}), cond({}), true],
+    ["利用条件が 0（直接行けない）", attrs({ access: 0, flood: 1 }), cond({ restricted: true }), false],
+    ["利用条件が 2（対象者のみ）で、「対象者限定も含める」なし", attrs({ access: 2 }), cond({}), false],
+    ["利用条件が 2（対象者のみ）で、「対象者限定も含める」あり", attrs({ access: 2 }), cond({ restricted: true }), true],
+    ["洪水を選び、洪水が 2（条件付き）、条件付き OK", attrs({ access: 1, flood: 2 }), cond({ hazards: ["flood"] }), true],
+    ["洪水を選び、洪水が 2（条件付き）、条件付き NG", attrs({ access: 1, flood: 2 }), cond({ hazards: ["flood"], conditional: false }), false],
+    ["洪水と地震を選び、洪水 1・地震 0", attrs({ access: 1, flood: 1, quake: 0 }), cond({ hazards: ["flood", "quake"] }), false],
+    ["選んでいない災害は関係ない（洪水 0 でも、何も選ばなければ合う）", attrs({ access: 1, flood: 0 }), cond({}), true],
+    ["高齢者とペットを選び、高齢者 1・ペット 不明、不明 NG", attrs({ access: 1, elderly: 1 }), cond({ people: ["elderly", "pet"], unknown: false }), false],
+    ["高齢者とペットを選び、高齢者 1・ペット 1", attrs({ access: 1, elderly: 1, pet: 1 }), cond({ people: ["elderly", "pet"], unknown: false }), true],
+    ["利用条件が不明で、不明 NG", attrs({ flood: 1 }), cond({ hazards: ["flood"], unknown: false }), false],
+  ];
+  for (const [name, a, c, exp] of cases) {
+    const r = await safe(() => matchesConditions(a, c));
+    report(sec, `${name} → ${exp}`, !r.error && r.value === exp,
+      r.error ? `エラー：${r.error.message}` : `返ってきたのは ${r.value} です`);
   }
 }
