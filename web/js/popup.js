@@ -5,7 +5,8 @@ import { CONFIG } from "./config.js";
 import { formatDistance, fullAttrs, sourceOf, HAZARD_KEYS } from "./shelters.js";
 import { isLocalServer, renderPhotos } from "./photos.js";
 
-const MARK = { 1: "○", 2: "△", 0: "×" };
+const MARK = { "可": "○", "条件付き": "△", "不可": "×" };
+const CLASS = { "可": "ok", "条件付き": "cond", "不可": "ng" };
 const SOURCE = { survey: "調査で確認", auto: "備考・受入対象者から推定", gsi: "国土地理院の指定" };
 const POPUP_PEOPLE = ["elderly", "disabled", "infant", "pet"];
 
@@ -22,9 +23,9 @@ function marks(props, attrs, keys, labels) {
   for (const key of keys) {
     const v = attrs[key];
     const src = sourceOf(props, key);
-    const span = el("span", `mark mark-v${v ?? "u"}${src === "survey" ? " mark-survey" : ""}`);
+    const span = el("span", `mark mark-${CLASS[v] || "unknown"}${src === "survey" ? " mark-survey" : ""}`);
     span.append(el("b", null, v == null ? "？" : MARK[v]), labels[key]);
-    span.title = v == null ? "不明" : SOURCE[src];
+    span.title = v == null ? "不明" : `${v}（${SOURCE[src]}）`;
     box.append(span);
   }
   return box;
@@ -33,9 +34,9 @@ function marks(props, attrs, keys, labels) {
 function accessLine(props, attrs) {
   const note = props.accessNote || "";
   const lines = {
-    1: ["access-ok", "だれでも利用できます"],
-    2: ["access-limited", `対象者のみ${note ? "：" + note : ""}`],
-    0: ["access-no", `直接は行けません（二次避難所など）${note ? "：" + note : ""}`],
+    "可": ["access-ok", "だれでも利用できます"],
+    "条件付き": ["access-limited", `対象者のみ${note ? "：" + note : ""}`],
+    "不可": ["access-no", `直接は行けません（二次避難所など）${note ? "：" + note : ""}`],
   };
   const [cls, text] = lines[attrs.access] || ["access-unknown", "利用条件：不明"];
   return el("p", `access ${cls}`, text);
@@ -52,7 +53,7 @@ export function buildPopup(feature, km, originLabel, opts = {}) {
   const badges = el("div", "badges");
   if (props.shelter) badges.append(el("span", "badge badge-shelter", "指定避難所"));
   if (props.emergency) badges.append(el("span", "badge badge-emergency", "指定緊急避難場所"));
-  if (attrs.welfare === 1) badges.append(el("span", "badge badge-welfare", "福祉避難所"));
+  if (attrs.welfare === "可") badges.append(el("span", "badge badge-welfare", "福祉避難所"));
   box.append(badges);
 
   box.append(accessLine(props, attrs));

@@ -92,10 +92,10 @@ body {
 .popup .marks-title { font-size: 12px; color: var(--muted); margin: 6px 0 2px; }
 .marks { display: flex; flex-wrap: wrap; gap: 3px; }
 .mark { font-size: 12px; padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px; display: inline-flex; gap: 3px; cursor: default; }
-.mark-v1 { background: #e7f3e9; color: #1d6b2f; }
-.mark-v2 { background: #fdf6dc; color: #7a5a00; }
-.mark-v0 { background: #f3f4f5; color: #8a929a; }
-.mark-vu { color: #8a929a; border-style: dashed; }
+.mark-ok { background: #e7f3e9; color: #1d6b2f; }
+.mark-cond { background: #fdf6dc; color: #7a5a00; }
+.mark-ng { background: #f3f4f5; color: #8a929a; }
+.mark-unknown { color: #8a929a; border-style: dashed; }
 .mark-survey { border: 1.5px solid currentColor; font-weight: 600; }
 .popup .marks-legend { font-size: 11px; color: var(--muted); }
 .photos { display: flex; gap: 4px; flex-wrap: wrap; margin: 6px 0; }

@@ -42,7 +42,7 @@ import shutil
 import sys
 import unicodedata
 
-from shelter_attrs import KEYS as ATTR_KEYS, auto_attrs, merge, read_attrs
+from shelter_attrs import COND, KEYS as ATTR_KEYS, NG, OK, auto_attrs, merge, read_attrs
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -170,7 +170,7 @@ def add_attrs(facilities, survey):
         values, src = auto_attrs(f["target"], f["_remarks"], f["_designated"])
         s = survey.get(f["id"])
         f["attrs"], f["src"] = merge(values, src, s)
-        note = (s or {}).get("access_note") or (f["target"] if f["attrs"].get("access") == 2 else "")
+        note = (s or {}).get("access_note") or (f["target"] if f["attrs"].get("access") == COND else "")
         if note:
             f["accessNote"] = note
         if s:
@@ -198,7 +198,7 @@ def print_attr_summary(facilities, surveyed):
     for key in ATTR_KEYS:
         c = Counter(f["attrs"][key] for f in facilities if key in f["attrs"])
         n = sum(1 for f in facilities if f["src"].get(key) == "survey")
-        print(f"   {key:<9} {c[1]:>6} / {c[2]:>5} / {c[0]:>6}　［{n}］")
+        print(f"   {key:<9} {c[OK]:>6} / {c[COND]:>5} / {c[NG]:>6}　［{n}］")
 
 
 def main():
@@ -229,12 +229,19 @@ def main():
 
     facilities = build(rows1, rows2)
     idmap = {cid: f["id"] for f in facilities for cid in f["ids"]}
-    survey = read_attrs(ATTRS_DIR, idmap, errors) if ATTRS_DIR.exists() else {}
+    warnings = []
+    survey = read_attrs(ATTRS_DIR, idmap, errors, warnings) if ATTRS_DIR.exists() else {}
     if errors:
         print(f"❌ エラー {len(errors)} 件。何も書き換えていません。直してからもう一度実行してください。")
         for e in errors[:30]:
             print(f"   {e}")
         sys.exit(1)
+    if warnings:
+        print(f"⚠ 注意 {len(warnings)} 件（データは作ります。できれば直してください）")
+        for w in warnings[:30]:
+            print(f"   {w}")
+        if len(warnings) > 30:
+            print(f"   …ほか {len(warnings) - 30} 件")
     add_attrs(facilities, survey)
     both = sum(1 for f in facilities if f["shelter"] and f["emergency"])
     print(f"指定避難所 {len(rows1)} 行・指定緊急避難場所 {len(rows2)} 行 → {len(facilities)} 施設（両方に指定 {both}）")
