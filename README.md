@@ -5,7 +5,7 @@
 
 - アプリ（GitHub Pages）：https://shao-ru.github.io/disaster-info-map/web/
 - リポジトリ：https://github.com/shao-ru/disaster-info-map
-- 参加する人へ：[参加ガイド](doc/参加ガイド.md) ／ [しくみの説明](doc/しくみの説明.md)
+- 参加する人へ：[参加ガイド](doc/参加ガイド.md) ／ [しくみの説明](doc/しくみの説明.md) ／ [避難所の調査と写真（データ更新の手順）](doc/避難所の調査と写真.md)
 
 ## 自分の PC で動かす
 
