@@ -42,7 +42,7 @@ import shutil
 import sys
 import unicodedata
 
-from shelter_attrs import KEYS as ATTR_KEYS, auto_attrs, merge, read_attrs
+from shelter_attrs import COND, KEYS as ATTR_KEYS, NG, OK, auto_attrs, merge, read_attrs
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -170,7 +170,7 @@ def add_attrs(facilities, survey):
         values, src = auto_attrs(f["target"], f["_remarks"], f["_designated"])
         s = survey.get(f["id"])
         f["attrs"], f["src"] = merge(values, src, s)
-        note = (s or {}).get("access_note") or (f["target"] if f["attrs"].get("access") == 2 else "")
+        note = (s or {}).get("access_note") or (f["target"] if f["attrs"].get("access") == COND else "")
         if note:
             f["accessNote"] = note
         if s:
@@ -198,7 +198,7 @@ def print_attr_summary(facilities, surveyed):
     for key in ATTR_KEYS:
         c = Counter(f["attrs"][key] for f in facilities if key in f["attrs"])
         n = sum(1 for f in facilities if f["src"].get(key) == "survey")
-        print(f"   {key:<9} {c[1]:>6} / {c[2]:>5} / {c[0]:>6}　［{n}］")
+        print(f"   {key:<9} {c[OK]:>6} / {c[COND]:>5} / {c[NG]:>6}　［{n}］")
 
 
 def main():

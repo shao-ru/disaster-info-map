@@ -2,11 +2,12 @@
 
 // 避難所の項目（attrs のキー）
 export const PEOPLE_KEYS = ["elderly", "disabled", "infant", "pet", "welfare"];
-export const HAZARD_KEYS = ["flood", "inland", "landslide", "quake", "fire", "tsunami", "surge", "volcano"];
+// 災害の順番は、国土地理院の指定緊急避難場所データ（mergeFromCity_2.csv）の列と同じ
+export const HAZARD_KEYS = ["flood", "landslide", "surge", "quake", "tsunami", "fire", "inland", "volcano"];
 export const ATTR_KEYS = ["access", ...PEOPLE_KEYS, ...HAZARD_KEYS];
 
 // GeoJSON の attrs には「分かっている項目」だけが入っている。
-// 分からない項目を null（不明）で埋めて、すべての項目がそろったオブジェクトにする
+// 値は "可"・"条件付き"・"不可" の文字列。分からない項目を null（不明）で埋めて、すべての項目がそろったオブジェクトにする
 export function fullAttrs(props) {
   const a = props.attrs || {};
   return Object.fromEntries(ATTR_KEYS.map((k) => [k, a[k] ?? null]));

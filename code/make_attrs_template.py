@@ -1,7 +1,7 @@
 """
 make_attrs_template.py  -  調査用のファイル（attrs/<市区町村コード>.csv）のひな形を作る
 
-その市区町村のすべての避難所を 1 行ずつ並べ、id・name・address を入れた CSV を作ります。
+その市区町村のすべての避難所を 1 行ずつ並べ、id・name・住所 を入れた CSV を作ります。
 ほかの列は空（＝不明）なので、調べた項目だけ書き込みます。
 
 すでにファイルがある場合は、まだ書かれていない施設の行だけを、最後に追加します（書いた内容は消えません）。
@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shelter_attrs import ATTR_COLUMNS  # noqa: E402
+from shelter_attrs import ATTR_COLUMNS, COLUMN_NAMES  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SHELTERS = ROOT / "data/static/shelters"
@@ -49,7 +49,7 @@ def main():
             if mode == "w":
                 w.writeheader()
             for p in new:
-                w.writerow({"id": p["id"], "name": p["name"], "address": p["address"]})
+                w.writerow({"id": p["id"], "name": p["name"], COLUMN_NAMES["address"]: p["address"]})
         print(f"attrs/{code}.csv：{items[0]['pref']}{items[0]['city']}　{len(new)} 行を追加（全部で {len(items)} 施設）")
 
 

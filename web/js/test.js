@@ -111,12 +111,12 @@ for (const a of areas) {
 // ---------------- 課題 4-1 ----------------
 {
   const sec = section("課題 4-1  isOk()  ★★☆☆☆");
-  const show = (v) => (v === null ? "null（不明）" : String(v));
+  const show = (v) => (v === null ? "null（不明）" : `"${v}"`);
   const cases = [
-    [1, { conditional: false, unknown: false }, true],
-    [0, { conditional: true, unknown: true }, false],
-    [2, { conditional: true, unknown: false }, true],
-    [2, { conditional: false, unknown: true }, false],
+    ["可", { conditional: false, unknown: false }, true],
+    ["不可", { conditional: true, unknown: true }, false],
+    ["条件付き", { conditional: true, unknown: false }, true],
+    ["条件付き", { conditional: false, unknown: true }, false],
     [null, { conditional: false, unknown: true }, true],
     [null, { conditional: true, unknown: false }, false],
   ];
@@ -134,16 +134,16 @@ for (const a of areas) {
   const cond = (c) => ({ hazards: [], people: [], restricted: false, conditional: true, unknown: true, ...c });
   const cases = [
     ["何も選ばず、値はすべて不明（不明 OK）", attrs({}), cond({}), true],
-    ["利用条件が 0（直接行けない）", attrs({ access: 0, flood: 1 }), cond({ restricted: true }), false],
-    ["利用条件が 2（対象者のみ）で、「対象者限定も含める」なし", attrs({ access: 2 }), cond({}), false],
-    ["利用条件が 2（対象者のみ）で、「対象者限定も含める」あり", attrs({ access: 2 }), cond({ restricted: true }), true],
-    ["洪水を選び、洪水が 2（条件付き）、条件付き OK", attrs({ access: 1, flood: 2 }), cond({ hazards: ["flood"] }), true],
-    ["洪水を選び、洪水が 2（条件付き）、条件付き NG", attrs({ access: 1, flood: 2 }), cond({ hazards: ["flood"], conditional: false }), false],
-    ["洪水と地震を選び、洪水 1・地震 0", attrs({ access: 1, flood: 1, quake: 0 }), cond({ hazards: ["flood", "quake"] }), false],
-    ["選んでいない災害は関係ない（洪水 0 でも、何も選ばなければ合う）", attrs({ access: 1, flood: 0 }), cond({}), true],
-    ["高齢者とペットを選び、高齢者 1・ペット 不明、不明 NG", attrs({ access: 1, elderly: 1 }), cond({ people: ["elderly", "pet"], unknown: false }), false],
-    ["高齢者とペットを選び、高齢者 1・ペット 1", attrs({ access: 1, elderly: 1, pet: 1 }), cond({ people: ["elderly", "pet"], unknown: false }), true],
-    ["利用条件が不明で、不明 NG", attrs({ flood: 1 }), cond({ hazards: ["flood"], unknown: false }), false],
+    ["利用条件が「不可」（直接行けない）", attrs({ access: "不可", flood: "可" }), cond({ restricted: true }), false],
+    ["利用条件が「条件付き」（対象者のみ）で、「対象者限定も含める」なし", attrs({ access: "条件付き" }), cond({}), false],
+    ["利用条件が「条件付き」（対象者のみ）で、「対象者限定も含める」あり", attrs({ access: "条件付き" }), cond({ restricted: true }), true],
+    ["洪水を選び、洪水が「条件付き」、条件付き OK", attrs({ access: "可", flood: "条件付き" }), cond({ hazards: ["flood"] }), true],
+    ["洪水を選び、洪水が「条件付き」、条件付き NG", attrs({ access: "可", flood: "条件付き" }), cond({ hazards: ["flood"], conditional: false }), false],
+    ["洪水と地震を選び、洪水「可」・地震「不可」", attrs({ access: "可", flood: "可", quake: "不可" }), cond({ hazards: ["flood", "quake"] }), false],
+    ["選んでいない災害は関係ない（洪水「不可」でも、何も選ばなければ合う）", attrs({ access: "可", flood: "不可" }), cond({}), true],
+    ["高齢者とペットを選び、高齢者「可」・ペット 不明、不明 NG", attrs({ access: "可", elderly: "可" }), cond({ people: ["elderly", "pet"], unknown: false }), false],
+    ["高齢者とペットを選び、高齢者「可」・ペット「可」", attrs({ access: "可", elderly: "可", pet: "可" }), cond({ people: ["elderly", "pet"], unknown: false }), true],
+    ["利用条件が不明で、不明 NG", attrs({ flood: "可" }), cond({ hazards: ["flood"], unknown: false }), false],
   ];
   for (const [name, a, c, exp] of cases) {
     const r = await safe(() => matchesConditions(a, c));
