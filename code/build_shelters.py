@@ -229,12 +229,19 @@ def main():
 
     facilities = build(rows1, rows2)
     idmap = {cid: f["id"] for f in facilities for cid in f["ids"]}
-    survey = read_attrs(ATTRS_DIR, idmap, errors) if ATTRS_DIR.exists() else {}
+    warnings = []
+    survey = read_attrs(ATTRS_DIR, idmap, errors, warnings) if ATTRS_DIR.exists() else {}
     if errors:
         print(f"❌ エラー {len(errors)} 件。何も書き換えていません。直してからもう一度実行してください。")
         for e in errors[:30]:
             print(f"   {e}")
         sys.exit(1)
+    if warnings:
+        print(f"⚠ 注意 {len(warnings)} 件（データは作ります。できれば直してください）")
+        for w in warnings[:30]:
+            print(f"   {w}")
+        if len(warnings) > 30:
+            print(f"   …ほか {len(warnings) - 30} 件")
     add_attrs(facilities, survey)
     both = sum(1 for f in facilities if f["shelter"] and f["emergency"])
     print(f"指定避難所 {len(rows1)} 行・指定緊急避難場所 {len(rows2)} 行 → {len(facilities)} 施設（両方に指定 {both}）")

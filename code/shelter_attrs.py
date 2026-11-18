@@ -138,10 +138,12 @@ def auto_attrs(target, notes, designated):
 
 
 # ------------------------------------------------------------------ 調査の結果（attrs/*.csv）
-def read_attrs(attrs_dir, ids, errors):
+def read_attrs(attrs_dir, ids, errors, warnings=None):
     """
     attrs/<市区町村コード>.csv を読む。
-      ids    : {共通ID: 施設の代表 ID}（施設のどちらの共通ID で書いてもよい）
+      ids      : {共通ID: 施設の代表 ID}（施設のどちらの共通ID で書いてもよい）
+      errors   : まちがい（あると止まる）を入れるリスト
+      warnings : 注意（止まらない。例：根拠が空）を入れるリスト
     戻り値 : {代表 ID: {"values": {項目: 値 or None}, "access_note": …, "source": …, "by": …}}
     """
     result = {}
@@ -187,7 +189,8 @@ def read_attrs(attrs_dir, ids, errors):
             note = (r.get("access_note") or "").strip()
             source = (r.get("source") or "").strip()
             if (values or note) and not source:
-                errors.append(f"{where}：「根拠」（調べたページの URL や資料名）を書いてください")
+                if warnings is not None:   # 根拠がなくても止めない（注意だけ出す）
+                    warnings.append(f"{where}：「根拠」（調べたページの URL や資料名）が空です")
             if values or note:
                 result[main] = {"values": values, "access_note": note, "source": source,
                                 "by": (r.get("by") or "").strip()}
