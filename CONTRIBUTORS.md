@@ -21,3 +21,4 @@
 | Hiyu Shiina | a250849h-glitch  | 全体設計・Web の枠組み・UI |
 | ogawa shion | a250827o-blip | |
 | ri| 00121000000 | |
+| Nagano| a250867k-ops | |
