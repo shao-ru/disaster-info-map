@@ -4,7 +4,7 @@
 |---|---|---|---|
 | `raw/` | ダウンロードした元のデータ（そのまま保存） | ほとんど変わらない | 入れない（大きいため） |
 | `static/` | Python で処理した、アプリが読み込むデータ | 元データを更新したときだけ作り直す | 入れる（GitHub Pages で公開） |
-| `cache/` | その都度ネットから取ってくるデータ（雨量の最新値など） | よく変わる | 入れない |
+| `cache/` | その都度ネットから取ってくるデータ（`amedas_rain.py realtime` の保存先など） | よく変わる | 入れない |
 | `output/` | 集計・分析の結果 | 課題ごとに変わる | 必要に応じて |
 
 ## raw/ の出典
@@ -55,10 +55,35 @@ static/photos/index.json                                      写真の一覧（
 - チェック：`uv run ./code/build_photos.py`
 - 公開の設定（初回だけ・管理者）：GitHub の Settings → Pages → Source を「GitHub Actions」にする
 
+## 洪水の浸水深（教員）
+
+```
+uv run ./code/build_flood.py
+```
+
+`raw/洪水浸水想定区域データ/洪水浸水想定区域（1次メッシュ単位）/` の A31b（GeoJSON の ZIP）から、地図タイル `static/flood/max/<z>/<x>/<y>.png` と `meta.json` を作ります（柏市と周辺 4 市＋3 km、ズーム 9〜14、約 3.6 MB）。
+
+- 元データは多角形の形だが、中身は約 5 m の格子。格子のまま約 8 m（ズーム 14）の画像に焼き直し、小さいズームは 2×2 の最大値で縮小する（浸水は深い方を残す）
+- 「洪水予報河川・水位周知河川」と「その他の河川」を重ね、深い方を表示する
+- 計画規模は `--scale plan`、対象の市は `--city 千葉県柏市 --city …`、細かさは `--maxzoom 15`（約 4 m、データ量は約 3 倍）
+- `meta.json` にはタイルの一覧が入っている。アプリは一覧に無いタイル（浸水しない所）を読みにいかない
+
+## 気象観測所と過去の気象データ（教員・手動）
+
+```
+uv run ./code/weather.py stations --city 千葉県柏市 --radius 25
+uv run ./code/weather.py history --start 2024-01
+```
+
+- `stations`：中心の市から ○ km 以内のアメダス観測所の一覧 → `static/weather/stations.geojson`
+- `history`：一覧の観測所の日ごとの値（降水量・気温・日照時間・降雪・積雪・風速・湿度）→ `static/weather/daily/<地点コード>.csv`。すでにある月は飛ばし、最後の月だけ取り直すので、ときどき同じコマンドを実行すれば最新になる
+- リアルタイムの値（10 分ごと）は、アプリがブラウザーから気象庁のデータを直接読む（このスクリプトは不要）。読めないときは画面に注意が出て、過去の記録だけ見られる
+- 取得元はどちらも気象庁ホームページで、公式 API ではない。形が変わったら直す必要がある。リクエストの間隔（1 秒）は短くしない
+
 ## 市区町村の境界（最初に 1 回だけ・教員）
 
 ```
-uv run --with geopandas --with pyogrio python ./code/build_boundaries.py
+uv run ./code/build_boundaries.py
 ```
 
 `admin_boundaries/<県コード>.geojson`（e-Stat の境界）を作り、`regions.json` の市区町村の中心・範囲を更新します。

@@ -1,0 +1,171 @@
+{
+ "type": "FeatureCollection",
+ "generated": "2026-11-21",
+ "center": {
+  "name": "千葉県柏市",
+  "lng": 139.98848,
+  "lat": 35.85901
+ },
+ "radiusKm": 25,
+ "source": "気象庁 アメダス地点表",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.11,
+     35.86333
+    ]
+   },
+   "properties": {
+    "code": "45061",
+    "name": "我孫子",
+    "kana": "アビコ",
+    "alt": 20,
+    "km": 11.0,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "45",
+    "block_no": "0376",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.04333,
+     35.71167
+    ]
+   },
+   "properties": {
+    "code": "45106",
+    "name": "船橋",
+    "kana": "フナバシ",
+    "alt": 28,
+    "km": 17.1,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "45",
+    "block_no": "1236",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.21167,
+     35.89
+    ]
+   },
+   "properties": {
+    "code": "40426",
+    "name": "龍ケ崎",
+    "kana": "リュウガサキ",
+    "alt": 4,
+    "km": 20.4,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "40",
+    "block_no": "1014",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.75667,
+     35.88333
+    ]
+   },
+   "properties": {
+    "code": "43256",
+    "name": "越谷",
+    "kana": "コシガヤ",
+    "alt": 3,
+    "km": 21.1,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "43",
+    "block_no": "0364",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.89167,
+     36.04333
+    ]
+   },
+   "properties": {
+    "code": "40326",
+    "name": "坂東",
+    "kana": "バンドウ",
+    "alt": 16,
+    "km": 22.3,
+    "elems": [
+     "precip"
+    ],
+    "prec_no": "40",
+    "block_no": "0323",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.21167,
+     35.72833
+    ]
+   },
+   "properties": {
+    "code": "45116",
+    "name": "佐倉",
+    "kana": "サクラ",
+    "alt": 5,
+    "km": 24.8,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "45",
+    "block_no": "0916",
+    "kind": "a"
+   }
+  }
+ ]
+}

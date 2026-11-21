@@ -30,6 +30,8 @@ uv run ./code/serve.py
 
 - 避難所：[国土地理院「指定緊急避難場所・指定避難所データ」](https://www.gsi.go.jp/bousaichiri/hinanbasho.html)を加工して作成
 - 市区町村の境界：[政府統計の総合窓口（e-Stat）「2020 年国勢調査 小地域（町丁・字等）境界データ」](https://www.e-stat.go.jp/gis)を加工して作成
+- 洪水の浸水深：[国土数値情報「洪水浸水想定区域（1次メッシュ単位）」（国土交通省）](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A31b-2025.html)を加工して作成
+- 気象観測所・雨量など：[気象庁](https://www.jma.go.jp/)（アメダスの観測値、[過去の気象データ検索](https://www.data.jma.go.jp/stats/etrn/)）
 - 背景地図：[地理院タイル](https://maps.gsi.go.jp/development/ichiran.html)
 
 このアプリの情報は参考用です。実際の避難は、お住まいの市区町村の情報と現地の状況に従ってください。
@@ -42,7 +44,7 @@ uv run ./code/serve.py
 |---|---|
 | プログラム（`web/`、`code/` など） | [PolyForm Noncommercial License 1.0.0](LICENSE) |
 | 説明書（`doc/`、各 README） | [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.ja)（表示 − 非営利） |
-| データ（`data/static/`） | 元データ（国土地理院・e-Stat）の利用規約に従います。上の「出典」を表示してください |
+| データ（`data/static/`） | 元データ（国土地理院・e-Stat・国土数値情報・気象庁）の利用規約に従います。上の「出典」を表示してください |
 
 このリポジトリに Pull Request を出した人は、その内容を上と同じライセンスで公開することに同意したものとします。
 

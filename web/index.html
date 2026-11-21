@@ -9,6 +9,8 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <!-- 地図の計算ライブラリ Turf.js（範囲の拡大・円・点が中にあるかの判定） -->
   <script src="https://unpkg.com/@turf/turf@7.1.0/turf.min.js"></script>
+  <!-- グラフのライブラリ Chart.js（気象観測所のグラフ） -->
+  <script src="https://unpkg.com/chart.js@4.4.1/dist/chart.umd.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -40,6 +42,12 @@
         </div>
       </div>
 
+      <details class="layers-box" open>
+        <summary>地図に重ねる情報</summary>
+        <div id="flood-box" class="layer-item"></div>
+        <div id="weather-box" class="layer-item"></div>
+      </details>
+
       <div class="panel-head">
         <h2 id="result-title">避難所</h2>
         <span id="count" class="muted"></span>
@@ -63,7 +71,7 @@
       <p id="approx-note" class="notice" hidden>※ 市区町村の範囲は、行政区域データの代わりに避難所の位置から推定した暫定のものです。</p>
       <p class="notice">
         距離は直線距離です。実際の避難は、市の避難情報と現地の状況に従ってください。<br>
-        出典：国土地理院「指定緊急避難場所・指定避難所データ」、地理院タイル
+        出典：国土地理院「指定緊急避難場所・指定避難所データ」、地理院タイル、国土数値情報「洪水浸水想定区域」（国土交通省）、気象庁
       </p>
       <div class="panel-foot">
         <button id="contributors-btn" type="button">参加者</button>
@@ -98,6 +106,15 @@
       <p class="photo-msg" role="status"></p>
       <div class="photo-actions"><button type="submit" id="photo-save" class="primary">保存</button></div>
     </form>
+  </dialog>
+
+  <!-- 気象観測所の札を押すと開く（中身は js/weather.js が作る） -->
+  <dialog id="weather-dialog" class="dialog dialog-wide" aria-labelledby="weather-title">
+    <div class="dialog-head">
+      <h2 id="weather-title">気象観測所</h2>
+      <button type="button" class="dialog-close" aria-label="閉じる">✕</button>
+    </div>
+    <div class="dialog-body"></div>
   </dialog>
 
   <script type="module" src="js/main.js"></script>

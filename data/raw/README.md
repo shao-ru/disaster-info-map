@@ -8,7 +8,8 @@
 |---|---|---|---|
 | `避難所/` | 指定緊急避難場所（mergeFromCity_2）・指定避難所（mergeFromCity_1）、全国 | [国土地理院](https://www.gsi.go.jp/bousaichiri/hinanbasho.html) | `code/build_shelters.py --init`（最初の 1 回だけ。以後は data/static/shelters/*_refine.csv を直す） |
 | `admin_map/` | 2020 年国勢調査 小地域（町丁・字等）境界、Shapefile（世界測地系・緯度経度）、都道府県ごと `A002005212020DDSWC{01〜47}.zip` | [e-Stat 統計GIS「境界データ」](https://www.e-stat.go.jp/gis) | `code/build_boundaries.py` |
-| `洪水浸水想定区域データ（河川単位）/` | 洪水浸水想定区域 A31a（2025 年度、埼玉県） | [国土数値情報](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A31a-2024.html) | （これから） |
+| `洪水浸水想定区域データ/洪水浸水想定区域（1次メッシュ単位）/` | 洪水浸水想定区域 A31b（2025 年度、1 次メッシュ 5339・5340・5439・5440、GeoJSON） | [国土数値情報](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A31b-2025.html) | `code/build_flood.py` |
+| `洪水浸水想定区域データ/洪水浸水想定区域（河川単位）/` | 洪水浸水想定区域 A31a（2025 年度、埼玉県） | [国土数値情報](https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-A31a-2025.html) | （これから） |
 | `気象データ/` | 船橋の時別値（2024〜2026 年） | [気象庁 過去の気象データ・ダウンロード](https://www.data.jma.go.jp/risk/obsdl/) | （これから） |
 | `amedas/` | `code/amedas_rain.py history` で取得した降水量 | [気象庁 過去の気象データ検索](https://www.data.jma.go.jp/stats/etrn/) | `code/amedas_rain.py` |
 
@@ -63,39 +64,38 @@ origin.zip  (278.7 KB)
 船橋_2026_header_merged.csv  (904.3 KB)
 ```
 
-### 洪水浸水想定区域データ（河川単位）/  （152 ファイル、679.6 MB）
+### 洪水浸水想定区域データ/  （162 ファイル、1.2 GB）
 
 ```
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.dbf  (31.5 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.prj  (145 B)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.shp  (101.2 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.shx  (1.5 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030595_10.dbf  (3.7 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030595_10.prj  (145 B)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030595_10.shp  (12.7 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030595_10.shx  (176.3 KB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030612_10.dbf  (3.8 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030612_10.prj  (145 B)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030612_10.shp  (15.4 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030612_10.shx  (182.7 KB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303040003_10.dbf  (2.2 MB)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303040003_10.prj  (145 B)
-A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303040003_10.shp  (11.1 MB)
-…ほか 137 ファイル
+info.md  (3.0 KB)
+Screenshot 2026-11-20 215317.png  (74.4 KB)
+Screenshot 2026-11-20 221115.png  (81.0 KB)
+国土数値情報（洪水浸水想定区域）（河川単位）製品仕様書  -v4_2.pdf  (510.7 KB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_10_5339_GEOJSON.zip  (109.9 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_10_5340_GEOJSON.zip  (103.9 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_10_5439_GEOJSON.zip  (183.8 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_10_5440_GEOJSON.zip  (39.2 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_20_5339_GEOJSON.zip  (33.1 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_20_5340_GEOJSON.zip  (13.9 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_20_5439_GEOJSON.zip  (53.0 MB)
+洪水浸水想定区域（1次メッシュ単位）/A31b-25_20_5440_GEOJSON.zip  (12.3 MB)
+洪水浸水想定区域（河川単位）/A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.dbf  (31.5 MB)
+洪水浸水想定区域（河川単位）/A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.prj  (145 B)
+洪水浸水想定区域（河川単位）/A31a-25_11_10_SHP/10_計画規模/A31a-10-25_11_8303030339_10.shp  (101.2 MB)
+…ほか 147 ファイル
 ```
 
-### 避難所/  （12 ファイル、386.2 MB）
+### 避難所/  （11 ファイル、336.5 MB）
 
 ```
-mergeFromCity_1/mergeFromCity_1 - Copy.json  (49.7 MB)
 mergeFromCity_1/mergeFromCity_1.csv  (11.2 MB)
 mergeFromCity_1/mergeFromCity_1.geojson  (49.7 MB)
 mergeFromCity_1/mergeFromCity_1.gpkg  (16.9 MB)
-mergeFromCity_1/ご利用上の注意.txt  (1.1 KB)
+mergeFromCity_1/ご利用上の注意.txt  (1.5 KB)
 mergeFromCity_1.zip  (60.8 MB)
 mergeFromCity_2/mergeFromCity_2.csv  (16.2 MB)
 mergeFromCity_2/mergeFromCity_2.geojson  (82.7 MB)
-mergeFromCity_2/ご利用上の注意.txt  (1.1 KB)
+mergeFromCity_2/ご利用上の注意.txt  (1.5 KB)
 mergeFromCity_2.zip  (98.9 MB)
 水害統計調査.docx  (13.8 KB)
 避難所等データダウンロードサイト.docx  (13.7 KB)

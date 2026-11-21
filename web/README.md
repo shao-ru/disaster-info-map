@@ -45,6 +45,8 @@ uv run ./code/serve.py
 | `js/shelters.js` | 避難所の値（attrs）の整理・距離計算 |
 | `js/conditions-ui.js` | 画面の「条件」（災害・受入れなど） |
 | `js/photos.js` | 写真の表示と「写真を追加」（手元の serve.py のときだけ） |
+| `js/flood.js` | 洪水の浸水深の図層（表示の切り替え・濃さ・凡例） |
+| `js/weather.js` | 気象観測所の図層（リアルタイムの雨量・気温）と、直近 24 時間・過去の記録のグラフ（Chart.js） |
 | `js/list.js` / `js/popup.js` / `js/contributors.js` | 一覧 / 吹き出し / 参加者 |
 | `js/main.js` | 地図の表示と全体の流れ |
 | `js/test.js` | 課題チェックの中身（書き換えない） |
@@ -53,6 +55,8 @@ uv run ./code/serve.py
 | `../data/static/shelters/<県コード>.geojson` | 上の CSV と `attrs/*.csv` から `code/build_shelters.py` で自動生成 |
 | `../data/static/photos/` | 避難所の写真（吹き出しの「写真を追加」で保存） |
 | `../data/static/admin_boundaries/*.geojson` | 市区町村の範囲（e-Stat の境界データから自動生成） |
+| `../data/static/flood/max/` | 洪水の浸水深の地図タイル（`code/build_flood.py` で生成） |
+| `../data/static/weather/` | 気象観測所の一覧と過去の記録（`code/weather.py` で生成） |
 
 ## データの作り直し
 
@@ -67,5 +71,7 @@ uv run ./code/build_shelters.py
 ## 出典
 
 - 避難所：国土地理院「指定緊急避難場所・指定避難所データ」
+- 洪水の浸水深：国土数値情報「洪水浸水想定区域（1次メッシュ単位）」（国土交通省）
+- 気象観測所・雨量など：気象庁
 - 背景地図：地理院タイル（淡色地図）
-- 地図ライブラリ：MapLibre GL JS、Turf.js
+- ライブラリ：MapLibre GL JS（地図）、Turf.js（範囲の計算）、Chart.js（グラフ）
