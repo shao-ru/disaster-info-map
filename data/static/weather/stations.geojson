@@ -6,7 +6,7 @@
   "lng": 139.98848,
   "lat": 35.85901
  },
- "radiusKm": 25,
+ "radiusKm": 50.0,
  "source": "気象庁 アメダス地点表",
  "features": [
   {
@@ -164,6 +164,526 @@
     ],
     "prec_no": "45",
     "block_no": "0916",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.125,
+     36.05667
+    ]
+   },
+   "properties": {
+    "code": "40336",
+    "name": "つくば",
+    "kana": "ツクバ",
+    "alt": 25,
+    "km": 25.2,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "snow",
+     "humidity"
+    ],
+    "prec_no": "40",
+    "block_no": "47646",
+    "kind": "s"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.86333,
+     35.63833
+    ]
+   },
+   "properties": {
+    "code": "44136",
+    "name": "江戸川臨海",
+    "kana": "エドガワリンカイ",
+    "alt": 5,
+    "km": 27.0,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "44",
+    "block_no": "0370",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.75,
+     35.69167
+    ]
+   },
+   "properties": {
+    "code": "44132",
+    "name": "東京",
+    "kana": "トウキョウ",
+    "alt": 25,
+    "km": 28.4,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "snow",
+     "humidity"
+    ],
+    "prec_no": "44",
+    "block_no": "47662",
+    "kind": "s"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.10333,
+     35.60167
+    ]
+   },
+   "properties": {
+    "code": "45212",
+    "name": "千葉",
+    "kana": "チバ",
+    "alt": 3,
+    "km": 30.4,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "snow",
+     "humidity"
+    ],
+    "prec_no": "45",
+    "block_no": "47682",
+    "kind": "s"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.32,
+     35.96
+    ]
+   },
+   "properties": {
+    "code": "40391",
+    "name": "江戸崎",
+    "kana": "エドサキ",
+    "alt": 25,
+    "km": 31.9,
+    "elems": [
+     "precip"
+    ],
+    "prec_no": "40",
+    "block_no": "0911",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.22,
+     36.10333
+    ]
+   },
+   "properties": {
+    "code": "40341",
+    "name": "土浦",
+    "kana": "ツチウラ",
+    "alt": 26,
+    "km": 34.2,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "40",
+    "block_no": "0324",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.945,
+     36.16833
+    ]
+   },
+   "properties": {
+    "code": "40281",
+    "name": "下妻",
+    "kana": "シモツマ",
+    "alt": 20,
+    "km": 34.6,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "40",
+    "block_no": "0322",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.58667,
+     35.875
+    ]
+   },
+   "properties": {
+    "code": "43241",
+    "name": "さいたま",
+    "kana": "サイタマ",
+    "alt": 8,
+    "km": 36.3,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "snow",
+     "humidity"
+    ],
+    "prec_no": "43",
+    "block_no": "0363",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.385,
+     35.76333
+    ]
+   },
+   "properties": {
+    "code": "45121",
+    "name": "成田",
+    "kana": "ナリタ：成田国際空港",
+    "alt": 41,
+    "km": 37.3,
+    "elems": [
+     "temp",
+     "precip",
+     "wind"
+    ],
+    "prec_no": "45",
+    "block_no": "0378",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.59167,
+     35.73833
+    ]
+   },
+   "properties": {
+    "code": "44071",
+    "name": "練馬",
+    "kana": "ネリマ",
+    "alt": 51,
+    "km": 38.2,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "44",
+    "block_no": "1002",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.78,
+     35.55333
+    ]
+   },
+   "properties": {
+    "code": "44166",
+    "name": "羽田",
+    "kana": "ハネダ：東京国際空港",
+    "alt": 6,
+    "km": 38.9,
+    "elems": [
+     "temp",
+     "precip",
+     "wind"
+    ],
+    "prec_no": "44",
+    "block_no": "0371",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.635,
+     36.08667
+    ]
+   },
+   "properties": {
+    "code": "43126",
+    "name": "久喜",
+    "kana": "クキ",
+    "alt": 12,
+    "km": 40.7,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "43",
+    "block_no": "0359",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.62,
+     35.62667
+    ]
+   },
+   "properties": {
+    "code": "44126",
+    "name": "世田谷",
+    "kana": "セタガヤ",
+    "alt": 35,
+    "km": 42.1,
+    "elems": [
+     "precip"
+    ],
+    "prec_no": "44",
+    "block_no": "0368",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.71667,
+     36.20167
+    ]
+   },
+   "properties": {
+    "code": "40221",
+    "name": "古河",
+    "kana": "コガ",
+    "alt": 20,
+    "km": 45.3,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "40",
+    "block_no": "0320",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.18833,
+     36.23333
+    ]
+   },
+   "properties": {
+    "code": "40241",
+    "name": "柿岡",
+    "kana": "カキオカ",
+    "alt": 27,
+    "km": 45.3,
+    "elems": [
+     "precip"
+    ],
+    "prec_no": "40",
+    "block_no": "1012",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.65,
+     35.55167
+    ]
+   },
+   "properties": {
+    "code": "46061",
+    "name": "日吉",
+    "kana": "ヒヨシ",
+    "alt": 57,
+    "km": 45.8,
+    "elems": [
+     "precip"
+    ],
+    "prec_no": "46",
+    "block_no": "1006",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.50167,
+     35.85833
+    ]
+   },
+   "properties": {
+    "code": "45081",
+    "name": "香取",
+    "kana": "カトリ",
+    "alt": 37,
+    "km": 46.2,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "45",
+    "block_no": "0375",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.98833,
+     36.28167
+    ]
+   },
+   "properties": {
+    "code": "40231",
+    "name": "下館",
+    "kana": "シモダテ",
+    "alt": 24,
+    "km": 47.0,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "40",
+    "block_no": "1530",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.52167,
+     36.065
+    ]
+   },
+   "properties": {
+    "code": "43121",
+    "name": "鴻巣",
+    "kana": "コウノス",
+    "alt": 15,
+    "km": 47.9,
+    "elems": [
+     "precip"
+    ],
+    "prec_no": "43",
+    "block_no": "1069",
+    "kind": "a"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     139.48333,
+     35.68333
+    ]
+   },
+   "properties": {
+    "code": "44116",
+    "name": "府中",
+    "kana": "フチュウ",
+    "alt": 59,
+    "km": 49.6,
+    "elems": [
+     "temp",
+     "precip",
+     "wind",
+     "sun",
+     "humidity"
+    ],
+    "prec_no": "44",
+    "block_no": "1133",
     "kind": "a"
    }
   }

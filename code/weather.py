@@ -13,8 +13,8 @@ weather.py - 地域の気象観測所（アメダス）と、過去の気象デ�
             取得元：気象庁「過去の気象データ検索」のページ（1 地点・1 か月ごとに 1 ページ）
 
 使用例：
-  # 柏市の中心から 25 km 以内の観測所
-  uv run ./code/weather.py stations --city 千葉県柏市 --radius 25
+  # 柏市の中心から 50 km 以内の観測所
+  uv run ./code/weather.py stations --city 千葉県柏市 --radius 50
 
   # 2024 年 1 月〜今月までの日ごとの値（すでにある月は飛ばし、最後の月だけ取り直す）
   uv run ./code/weather.py history --start 2024-01
@@ -101,6 +101,11 @@ def cmd_stations(a):
     features = []
     for km, code, s, lon, lat in near:
         e = etrn.get(code[:2], {}).get(s["kjName"])
+        if not e:
+            # 名前が違う地点（例：つくば ＝ 過去データでは「館野」）は、位置が 1 km 以内のもので対応づける
+            e = min((x for x in etrn.get(code[:2], {}).values()
+                     if km_between(lon, lat, x["lon"], x["lat"]) <= 1.0),
+                    key=lambda x: km_between(lon, lat, x["lon"], x["lat"]), default=None)
         has = {k: s["elems"][i] != "0" for i, k in enumerate(ELEMS) if i < len(s["elems"])}
         features.append({
             "type": "Feature",

@@ -71,7 +71,7 @@ uv run ./code/build_flood.py
 ## 気象観測所と過去の気象データ（教員・手動）
 
 ```
-uv run ./code/weather.py stations --city 千葉県柏市 --radius 25
+uv run ./code/weather.py stations --city 千葉県柏市 --radius 50
 uv run ./code/weather.py history --start 2024-01
 ```
 
