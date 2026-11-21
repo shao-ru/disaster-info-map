@@ -1,0 +1,57 @@
+{
+ "generated": "2026-11-21",
+ "columns": [
+  {
+   "key": "precip",
+   "label": "降水量（合計）",
+   "unit": "mm"
+  },
+  {
+   "key": "precip_max1h",
+   "label": "降水量（最大 1 時間）",
+   "unit": "mm"
+  },
+  {
+   "key": "temp_avg",
+   "label": "気温（平均）",
+   "unit": "℃"
+  },
+  {
+   "key": "temp_max",
+   "label": "気温（最高）",
+   "unit": "℃"
+  },
+  {
+   "key": "temp_min",
+   "label": "気温（最低）",
+   "unit": "℃"
+  },
+  {
+   "key": "sun",
+   "label": "日照時間",
+   "unit": "h"
+  },
+  {
+   "key": "snowfall",
+   "label": "降雪の深さ（合計）",
+   "unit": "cm"
+  },
+  {
+   "key": "snow_depth",
+   "label": "最深積雪",
+   "unit": "cm"
+  },
+  {
+   "key": "wind_avg",
+   "label": "平均風速",
+   "unit": "m/s"
+  },
+  {
+   "key": "humidity",
+   "label": "湿度（平均）",
+   "unit": "%"
+  }
+ ],
+ "source": "気象庁「過去の気象データ検索」",
+ "sourceUrl": "https://www.data.jma.go.jp/stats/etrn/"
+}

@@ -24,6 +24,8 @@ import { getRegion } from "./student/region.js";
 import { findPrefectures, filterInArea } from "./student/search.js";
 import { matchesConditions } from "./student/conditions.js";
 import { setupContributors } from "./contributors.js";
+import { setupFlood } from "./flood.js";
+import { setupWeather } from "./weather.js";
 
 const state = {
   regions: null,
@@ -113,6 +115,10 @@ map.on("load", async () => {
   });
   map.on("mouseenter", "shelters", () => (map.getCanvas().style.cursor = "pointer"));
   map.on("mouseleave", "shelters", () => (map.getCanvas().style.cursor = ""));
+
+  // 地図に重ねる情報：洪水の浸水深（検索範囲より下に入れる）と気象観測所
+  setupFlood(map, $("flood-box"), "area-fill");
+  setupWeather(map, $("weather-box"), $("weather-dialog"));
 
   try {
     state.regions = await loadRegions();

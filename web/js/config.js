@@ -23,6 +23,23 @@ export const CONFIG = {
   photoIndexUrl: "../data/static/photos/index.json",                           // 写真の一覧（自動で作られる）
   boundariesUrl: (prefCode) => `../data/static/admin_boundaries/${prefCode}.geojson`, // 市区町村の範囲
 
+  // 洪水の浸水深（code/build_flood.py で作るタイル）
+  flood: {
+    metaUrl: "../data/static/flood/max/meta.json",
+    tilesDir: "../data/static/flood/max/",
+    visible: true,     // 最初から表示するか
+    opacity: 0.6,      // 濃さ（0〜1）
+  },
+
+  // 気象観測所（code/weather.py で作る一覧と過去の記録＋気象庁のリアルタイムの値）
+  weather: {
+    stationsUrl: "../data/static/weather/stations.geojson",
+    dailyDir: "../data/static/weather/daily/",
+    jmaUrl: "https://www.jma.go.jp/bosai/amedas",   // 気象庁のアメダスのデータ（公式 API ではない）
+    refreshMinutes: 10,                              // リアルタイムの値を読み直す間隔（分）
+    visible: true,
+  },
+
   // 最初に選ばれている地域
   defaultPref: "千葉県",
   defaultCity: "柏市",

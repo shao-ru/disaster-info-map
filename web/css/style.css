@@ -166,3 +166,48 @@ body {
 .photo-msg-warn { color: #8a4b0f; }
 .photo-actions button { font: inherit; font-size: 14px; padding: 6px 16px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer; }
 .photo-actions button:disabled { opacity: .5; }
+
+/* 地図に重ねる情報（洪水・気象観測所） */
+.layers-box { margin-bottom: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.layers-box summary { font-size: 14px; cursor: pointer; }
+.layer-item { margin-top: 6px; }
+.layer-item + .layer-item { border-top: 1px solid var(--line); padding-top: 6px; }
+.layer-head { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; }
+.layer-body { margin: 4px 0 2px 22px; }
+.layer-opacity { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.layer-opacity input { flex: 1; max-width: 160px; }
+.layer-note { font-size: 12px; color: var(--muted); line-height: 1.5; margin: 4px 0 0; }
+.flood-legend { display: flex; flex-wrap: wrap; gap: 3px 10px; font-size: 12px; margin-top: 4px; }
+.flood-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.flood-legend .swatch { width: 14px; height: 10px; border: 1px solid rgba(0, 0, 0, .15); }
+
+/* 気象観測所 */
+.wx-status { font-size: 13px; margin: 2px 0 4px; }
+.wx-status-warn { background: var(--warn-bg); color: var(--warn-ink); padding: 4px 6px; border-radius: 4px; }
+.wx-reload { font: inherit; font-size: 12px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+.wx-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin-top: 6px; font-size: 11px; }
+.wx-legend .muted { font-size: 11px; margin-right: 4px; }
+.wx-chip { padding: 0 4px; border-radius: 3px; border: 1px solid rgba(0, 0, 0, .12); font-variant-numeric: tabular-nums; }
+.wx-marker {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  font: inherit; font-size: 11px; line-height: 1.25; padding: 2px 6px; cursor: pointer;
+  background: var(--wx-bg, #fff); color: var(--wx-fg, var(--ink));
+  border: 1.5px solid #2d3a44; border-radius: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  white-space: nowrap;   /* position は書かない（MapLibre の position: absolute を上書きすると、位置がずれる）*/
+}
+.wx-marker::after {   /* 下向きの小さな三角（観測所の位置を指す） */
+  content: ""; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: #2d3a44; border-bottom: 0;
+}
+.wx-marker b { font-size: 11px; }
+.wx-value { font-variant-numeric: tabular-nums; }
+.dialog-wide { width: min(760px, calc(100vw - 24px)); max-height: min(90vh, 720px); }
+.wx-tabs { display: flex; gap: 4px; margin: 8px 0; border-bottom: 1px solid var(--line); }
+.wx-tabs button { font: inherit; font-size: 13px; padding: 6px 10px; border: 0; border-bottom: 3px solid transparent; background: none; cursor: pointer; color: var(--muted); }
+.wx-tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.wx-controls { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
+.wx-controls select { font: inherit; font-size: 13px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; }
+.wx-msg { font-size: 13px; color: var(--muted); margin: 6px 0; min-height: 1.2em; }
+.wx-msg-ng { color: var(--warn-ink); background: var(--warn-bg); padding: 4px 8px; border-radius: 4px; }
+.wx-chart { position: relative; height: min(46vh, 320px); }
+.wx-summary { font-size: 13px; margin: 6px 0 0; }
