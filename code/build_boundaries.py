@@ -1,3 +1,10 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "geopandas>=1.0",
+#     "pyogrio>=0.13.0",
+# ]
+# ///
 """
 行政区域（市区町村の境界）を作るスクリプト（教員用）
 
@@ -15,9 +22,9 @@
 
 regions.json（市区町村の一覧）を読んで更新するため、regions.json があることが前提。
 
-実行例（geopandas が必要）：
-  uv run --with geopandas --with pyogrio python code/build_boundaries.py
-  uv run --with geopandas --with pyogrio python code/build_boundaries.py --pref 12
+実行例（geopandas などは、上の script の dependencies から uv が自動で入れる）：
+  uv run ./code/build_boundaries.py
+  uv run ./code/build_boundaries.py --pref 12
 """
 import argparse
 import json
