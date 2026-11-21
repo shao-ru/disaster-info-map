@@ -193,7 +193,7 @@ body {
   font: inherit; font-size: 11px; line-height: 1.25; padding: 2px 6px; cursor: pointer;
   background: var(--wx-bg, #fff); color: var(--wx-fg, var(--ink));
   border: 1.5px solid #2d3a44; border-radius: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
-  white-space: nowrap; position: relative;
+  white-space: nowrap;   /* position は書かない（MapLibre の position: absolute を上書きすると、位置がずれる）*/
 }
 .wx-marker::after {   /* 下向きの小さな三角（観測所の位置を指す） */
   content: ""; position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%);

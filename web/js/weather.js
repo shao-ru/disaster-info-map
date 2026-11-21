@@ -124,7 +124,7 @@ export async function setupWeather(map, box, dialog) {
       e.stopPropagation();
       openStation(dialog, p, state);
     });
-    const marker = new maplibregl.Marker({ element: m, anchor: "bottom" }).setLngLat(f.geometry.coordinates);
+    const marker = new maplibregl.Marker({ element: m, anchor: "bottom", offset: [0, -6] }).setLngLat(f.geometry.coordinates);
     state.markers.push({ marker, el: m, props: p });
   }
 
